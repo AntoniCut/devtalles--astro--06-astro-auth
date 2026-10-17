@@ -196,6 +196,7 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
 
                 //  -----  si la acción devuelve un error, mostrarlo  -----
                 if (error) {
+                    
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
                         ? Object.values(error.fields)
