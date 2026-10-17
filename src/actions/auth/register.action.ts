@@ -17,7 +17,6 @@ import { z } from "astro/zod";
  * - valida los datos del formulario de registro
  */
 export const registerUser = defineAction({
-    
     /** - `acepta el envío del formulario` */
     accept: "form",
 
@@ -33,16 +32,28 @@ export const registerUser = defineAction({
         password: z.string().min(6),
 
         /** - `recordar la sesión` */
-        rememberMe: z.boolean().optional(),
+        remember_me: z.boolean().optional(),
     }),
 
     /** - `devuelve los datos ya validados` */
-    handler: async ({ name, email, password, rememberMe }) => {
+    handler: async ({ name, email, password, remember_me }, context) => {
 
+        const { cookies } = context;
 
-        console.log({ name, email, password, rememberMe });
-        return true;
+        /** - `numero de segundos que tiene un año` */
+        const numSegYear = 1000 * 60 * 60 * 24 * 365;
+
+        if (remember_me)
+            cookies.set("email", email, {
+                expires: new Date(Date.now() + numSegYear),
+                path: "/",
+            });
+        else cookies.delete("email");
+
+        return {
+            ok: true,
+            message: "Usuario creado",
+        };
 
     },
-
 });

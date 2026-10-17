@@ -2,9 +2,9 @@
     *  -------------------------------------------------  *
     *  -----  index.ts  --  /src/actions/index.ts  -----  *
     *  ------------------------------------------------- *
-*/
+ */
 
-import { registerUser } from '@/src/actions/auth/register.action'
+import { registerUser } from "@/src/actions/auth/register.action";
 
 
 /**
@@ -14,7 +14,6 @@ import { registerUser } from '@/src/actions/auth/register.action'
  * - actions server
  */
 export const server = {
-
     //  -----  auth  -----
     registerUser,
-}
+};
