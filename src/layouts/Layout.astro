@@ -11,20 +11,19 @@ import "@/src/styles/global.css";
 import Navbar from "@/src/components/shared/Navbar.astro";
 
 
-
 interface Props {
-
     title?: string;
 }
 
-
-
 const { title = "06 - Auth Astro App" } = Astro.props;
+
 
 ---
 
+
 <!doctype html>
 <html lang="es">
+    
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
@@ -33,14 +32,19 @@ const { title = "06 - Auth Astro App" } = Astro.props;
         <title>{title}</title>
         <ClientRouter />
     </head>
+    
     <body>
+        
         <Navbar />
 
         <main class="container mx-auto max-w-3xl px-4 py-8">
             <slot />
         </main>
+
     </body>
+
 </html>
+
 
 <style>
     html,
