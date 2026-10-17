@@ -8,7 +8,6 @@
 
 import AuthLayout from "@/src/layouts/AuthLayout.astro";
 
-
 ---
 
 <AuthLayout
@@ -16,81 +15,83 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
     titleAuth="Register"
     descriptionAuth="Please register to your account."
 >
-    
     <div class="flex justify-center self-center z-10">
-        
         <!-- -----  Formulario de Registro  ----- -->
         <form class="p-12 bg-white mx-auto rounded-2xl w-100">
-            
             <div class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Register</h3>
                 <p class="text-gray-500">Please register to your account.</p>
             </div>
 
             <div class="space-y-5">
-                
                 <div class="space-y-2">
-                    
-                    <label class="text-sm font-medium text-gray-700 tracking-wide">
+                    <label
+                        for="name"
+                        class="text-sm font-medium text-gray-700 tracking-wide"
+                    >
                         Nombre
                     </label>
-                    
+
                     <input
+                        id="name"
+                        name="name"
                         class="w-full text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="text"
                         placeholder="Tu nombre..."
                     />
-
                 </div>
 
                 <div class="space-y-2">
-                    
-                    <label class="text-sm font-medium text-gray-700 tracking-wide">
+                    <label
+                        for="email"
+                        class="text-sm font-medium text-gray-700 tracking-wide"
+                    >
                         Email
                     </label>
-                    
+
                     <input
+                        id="email"
+                        name="email"
                         class="w-full text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="email"
                         placeholder="mail@gmail.com"
                     />
-
                 </div>
 
                 <div class="space-y-2">
-                    
-                    <label class="mb-5 text-sm font-medium text-gray-700 tracking-wide">
+                    <label
+                        for="password"
+                        class="mb-5 text-sm font-medium text-gray-700 tracking-wide"
+                    >
                         Password
                     </label>
-                    
+
                     <input
+                        id="password"
+                        name="password"
                         class="w-full content-center text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="password"
                         placeholder="Enter your password"
                     />
-
                 </div>
 
                 <div class="flex items-center justify-between">
-                    
                     <div class="flex items-center">
-                        
                         <input
-                            id="remember_me"
-                            name="remember_me"
+                            id="rememberMe"
+                            name="rememberMe"
                             type="checkbox"
                             class="h-4 w-4 bg-blue-500 focus:ring-blue-400 border-gray-300 rounded"
                         />
-                        
+
                         <label
-                            for="remember_me"
+                            for="rememberMe"
                             class="ml-2 block text-sm text-gray-800"
                         >
                             Recuerdame
                         </label>
-
                     </div>
-                    
+
                     <div class="text-sm ml-10">
                         <a
                             href="/login"
@@ -99,22 +100,26 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
                             ¿Ya tienes una cuenta? Inicia sesión
                         </a>
                     </div>
-
                 </div>
+
+                <p
+                    id="formFeedback"
+                    class="text-sm text-center min-h-5"
+                    role="status"
+                ></p>
 
                 <div>
                     <button
                         type="submit"
-                        class="w-full flex justify-center bg-green-400 hover:bg-green-500 text-gray-100 p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition ease-in duration-500"
+                        class="disabled:bg-gray-300 w-full flex justify-center bg-green-400 hover:bg-green-500 text-gray-100 p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition ease-in duration-500"
+                        id="btnSubmit"
                     >
-                        Sign in
+                        Ingresar
                     </button>
                 </div>
-
             </div>
 
             <div class="pt-5 text-center text-gray-400 text-xs">
-                
                 <span>
                     Copyright © 2021-{new Date().getFullYear()}
                     <a
@@ -127,11 +132,110 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
                         AJI
                     </a>
                 </span>
-
             </div>
-
         </form>
-
     </div>
-
 </AuthLayout>
+
+
+<script>
+    
+    import { actions, isInputError } from "astro:actions";
+
+
+    /**
+     * -------------------------------------
+     * -----  `prepareRegisterForm()`  -----
+     * -------------------------------------
+     * - prepara el formulario de registro en cada carga del router
+     */
+    const prepareRegisterForm = (): void => {
+        
+
+        //*  -----  referencias al HTML  -----
+
+        /** - `formulario de registro` */
+        const form = document.querySelector("form") as HTMLFormElement | null;
+
+        /** - `botón de envío` */
+        const btnSubmit = document.getElementById(
+            "btnSubmit",
+        ) as HTMLButtonElement | null;
+
+        /** - `mensaje de resultado del formulario` */
+        const formFeedback = document.getElementById(
+            "formFeedback",
+        ) as HTMLParagraphElement | null;
+
+
+        //*  -----  si el formulario está completo, escuchar el envío  -----
+        if (form && btnSubmit && formFeedback) {
+            
+
+            //*  -----  escuchar el envío del formulario  -----
+
+            form.addEventListener("submit", async (event) => {
+                
+                //  -----  evitar el envío nativo del formulario  -----
+                event.preventDefault();
+
+                //  -----  limpiar el mensaje anterior  -----
+                formFeedback.textContent = "";
+
+                //  -----  desactivar el botón mientras se envía  -----
+                btnSubmit.setAttribute("disabled", "disabled");
+
+                /** - `datos escritos en el formulario` */
+                const formData = new FormData(form);
+
+                /** - `resultado de la acción de registro` */
+                const { error } = await actions.registerUser(formData);
+
+                //  -----  reactivar el botón al terminar  -----
+                btnSubmit.removeAttribute("disabled");
+
+                //  -----  si la acción devuelve un error, mostrarlo  -----
+                if (error) {
+                    /** - `mensajes de los campos inválidos` */
+                    const fieldMessages = isInputError(error)
+                        ? Object.values(error.fields)
+                              .flat()
+                              .filter((message): message is string =>
+                                  Boolean(message),
+                              )
+                        : [];
+
+                    //  -----  marcar el mensaje como error  -----
+                    formFeedback.classList.add("text-red-500");
+
+                    //  -----  quitar el color de éxito  -----
+                    formFeedback.classList.remove("text-green-600");
+
+                    //  -----  mostrar el error de validación o el de la acción  -----
+                    formFeedback.textContent =
+                        fieldMessages.length > 0
+                            ? fieldMessages.join(". ")
+                            : error.message;
+
+                    //  -----  detener el envío  -----
+                    return;
+                }
+
+                //  -----  marcar el mensaje como éxito  -----
+                formFeedback.classList.add("text-green-600");
+
+                //  -----  quitar el color de error  -----
+                formFeedback.classList.remove("text-red-500");
+
+                //  -----  confirmar el registro  -----
+                formFeedback.textContent = "Registro enviado";
+
+            });
+        }
+    };
+
+
+    //  -----  preparar el formulario en cada carga del router  -----
+    document.addEventListener("astro:page-load", prepareRegisterForm);
+
+</script>
