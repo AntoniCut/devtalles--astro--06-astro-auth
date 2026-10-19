@@ -4,6 +4,7 @@
     *  ----------------------------------------------------------  *
  */
 
+import type { FirebaseOptions } from "firebase/app";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
@@ -17,7 +18,7 @@ import { getAuth } from "firebase/auth";
  * - For Firebase JS SDK v7.20.0 and later, measurementId is optional
  * - https://firebase.google.com/docs/web/setup#available-libraries
  */
-const firebaseConfig = {
+const firebaseConfig: FirebaseOptions = {
     /** - `clave pública de la API Web de Firebase` */
     apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
 
