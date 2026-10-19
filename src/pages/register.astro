@@ -26,10 +26,8 @@ const rememberMe = !!email;
     descriptionAuth="Please register to your account."
 >
     <div class="flex justify-center self-center z-10">
-        
         <!-- -----  Formulario de Registro  ----- -->
         <form class="p-12 bg-white mx-auto rounded-2xl w-100">
-            
             <!-- -----  Encabezado del formulario  ----- -->
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Register</h3>
@@ -38,7 +36,6 @@ const rememberMe = !!email;
 
             <!-- -----  Contenido del formulario  ----- -->
             <div class="space-y-5">
-                
                 <!-- -----  Campo de nombre  ----- -->
                 <div class="space-y-2">
                     <label
@@ -161,16 +158,11 @@ const rememberMe = !!email;
                     </a>
                 </span>
             </footer>
-
         </form>
-
     </div>
-
 </AuthLayout>
 
-
 <script>
-
     import { actions, isInputError } from "astro:actions";
 
     /**
@@ -224,8 +216,7 @@ const rememberMe = !!email;
                 if (error) {
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
-                        ? Object
-                              .values(error.fields)
+                        ? Object.values(error.fields)
                               .flat()
                               .filter((message): message is string =>
                                   Boolean(message),
@@ -262,5 +253,4 @@ const rememberMe = !!email;
 
     //  -----  preparar el formulario en cada carga del router  -----
     document.addEventListener("astro:page-load", prepareRegisterForm);
-
 </script>
