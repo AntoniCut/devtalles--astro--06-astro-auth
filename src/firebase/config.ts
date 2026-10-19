@@ -52,6 +52,7 @@ const auth = getAuth(app);
  * -----  `firebase = {}`  -----
  * -----------------------------
  * - objeto de configuración de Firebase
+ * 
  */
 export const firebase = {
     app,
