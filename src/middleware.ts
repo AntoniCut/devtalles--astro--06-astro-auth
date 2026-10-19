@@ -23,8 +23,8 @@ const privateRoutes = ["/protected"];
  * - usuarios y contraseñas de autenticación
  */
 const authUsers = {
-    user: "admin2",
-    pass: "admin2",
+    user: "admin3",
+    pass: "admin3",
 };
 
 /**
@@ -66,11 +66,11 @@ const checkLocalAuth = (authHeader: string, next: MiddlewareNext) => {
     if (authHeader) {
         /** - `Obtener el valor de la autenticación` */
         const authValue = authHeader.split(" ").at(-1) ?? "user:pass";
-        console.log("\n\n\nauthValue", authValue);
+        //console.log("\n\n\nauthValue", authValue);
 
         /** - `Decodificar el valor de la autenticación` */
         const decodedValue = atob(authValue).split(":");
-        console.log("\n\n\ndecodedValue", decodedValue);
+        //console.log("\n\n\ndecodedValue", decodedValue);
 
         /** - `Obtener el username y password` */
         const [username, password] = decodedValue;
@@ -79,13 +79,13 @@ const checkLocalAuth = (authHeader: string, next: MiddlewareNext) => {
 
         const { user, pass } = authUsers;
 
-        //  -----  `Si el username y password son correctos, continuar`  -----
+        //*  -----  `Si el username y password son correctos, continuar`  -----
         if (username === user && password === pass) {
             return next();
         }
     }
 
-    //  -----  `Si el header de autenticación no existe, retornar un error 401`  -----
+    //*  -----  `Si el header de autenticación no existe, retornar un error 401`  -----
     return new Response("Autenticación requerida", {
         status: 401,
         headers: {

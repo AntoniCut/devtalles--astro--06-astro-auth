@@ -15,8 +15,8 @@ const email = Astro.cookies.get("email")?.value ?? "";
 /** - `true si la cookie de email tiene valor` */
 const rememberMe = !!email;
 
-console.log("cookie email => ", email);
-console.log("rememberMe => ", rememberMe);
+//console.log("cookie email => ", email);
+//console.log("rememberMe => ", rememberMe);
 
 ---
 
@@ -26,14 +26,20 @@ console.log("rememberMe => ", rememberMe);
     descriptionAuth="Please register to your account."
 >
     <div class="flex justify-center self-center z-10">
+        
         <!-- -----  Formulario de Registro  ----- -->
         <form class="p-12 bg-white mx-auto rounded-2xl w-100">
-            <div class="mb-4">
+            
+            <!-- -----  Encabezado del formulario  ----- -->
+            <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Register</h3>
                 <p class="text-gray-500">Please register to your account.</p>
-            </div>
+            </header>
 
+            <!-- -----  Contenido del formulario  ----- -->
             <div class="space-y-5">
+                
+                <!-- -----  Campo de nombre  ----- -->
                 <div class="space-y-2">
                     <label
                         for="name"
@@ -47,10 +53,12 @@ console.log("rememberMe => ", rememberMe);
                         name="name"
                         class="w-full text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="text"
+                        autocomplete="name"
                         placeholder="Tu nombre..."
                     />
                 </div>
 
+                <!-- -----  Campo de email  ----- -->
                 <div class="space-y-2">
                     <label
                         for="email"
@@ -64,11 +72,13 @@ console.log("rememberMe => ", rememberMe);
                         name="email"
                         class="w-full text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="email"
+                        autocomplete="email"
                         placeholder="mail@gmail.com"
                         value={email}
                     />
                 </div>
 
+                <!-- -----  Campo de contraseña  ----- -->
                 <div class="space-y-2">
                     <label
                         for="password"
@@ -82,10 +92,12 @@ console.log("rememberMe => ", rememberMe);
                         name="password"
                         class="w-full content-center text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="password"
+                        autocomplete="new-password"
                         placeholder="Enter your password"
                     />
                 </div>
 
+                <!-- -----  Campo de recordarme  ----- -->
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <input
@@ -104,6 +116,7 @@ console.log("rememberMe => ", rememberMe);
                         </label>
                     </div>
 
+                    <!-- -----  Enlace de inicio de sesión  ----- -->
                     <div class="text-sm ml-10">
                         <a
                             href="/login"
@@ -114,12 +127,14 @@ console.log("rememberMe => ", rememberMe);
                     </div>
                 </div>
 
+                <!-- -----  Mensaje de resultado del formulario  ----- -->
                 <p
                     id="formFeedback"
                     class="text-sm text-center min-h-5"
                     role="status"
                 ></p>
 
+                <!-- -----  Botón de envío del formulario  ----- -->
                 <div>
                     <button
                         type="submit"
@@ -131,7 +146,8 @@ console.log("rememberMe => ", rememberMe);
                 </div>
             </div>
 
-            <div class="pt-5 text-center text-gray-400 text-xs">
+            <!-- -----  Pie de página del formulario  ----- -->
+            <footer class="pt-5 text-center text-gray-400 text-xs">
                 <span>
                     Copyright © 2021-{new Date().getFullYear()}
                     <a
@@ -144,12 +160,17 @@ console.log("rememberMe => ", rememberMe);
                         AJI
                     </a>
                 </span>
-            </div>
+            </footer>
+
         </form>
+
     </div>
+
 </AuthLayout>
 
+
 <script>
+
     import { actions, isInputError } from "astro:actions";
 
     /**
@@ -194,7 +215,7 @@ console.log("rememberMe => ", rememberMe);
 
                 /** - `resultado de la acción de registro` */
                 const { data, error } = await actions.registerUser(formData);
-                console.log("data => ", data?.valueOf);
+                //console.log("data => ", data?.valueOf);
 
                 //  -----  reactivar el botón al terminar  -----
                 btnSubmit.removeAttribute("disabled");
@@ -203,7 +224,8 @@ console.log("rememberMe => ", rememberMe);
                 if (error) {
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
-                        ? Object.values(error.fields)
+                        ? Object
+                              .values(error.fields)
                               .flat()
                               .filter((message): message is string =>
                                   Boolean(message),
@@ -240,4 +262,5 @@ console.log("rememberMe => ", rememberMe);
 
     //  -----  preparar el formulario en cada carga del router  -----
     document.addEventListener("astro:page-load", prepareRegisterForm);
+
 </script>
