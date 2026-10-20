@@ -9,6 +9,13 @@
 import "@/src/styles/global.css";
 import AuthLayout from "@/src/layouts/AuthLayout.astro";
 
+
+/** - `valor de la cookie 'email'` */
+const email = Astro.cookies.get("email")?.value ?? "";
+
+/** - `true si la cookie de email tiene valor` */
+const rememberMe = !!email;
+
 ---
 
 <AuthLayout
@@ -17,8 +24,10 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
     descriptionAuth="Please sign in to your account."
 >
     <div class="flex justify-center self-center z-10">
+        
         <!-- -----  Formulario de Login  ----- -->
-        <form class="p-12 bg-white mx-auto rounded-2xl w-100">
+        <form method="post" class="p-12 bg-white mx-auto rounded-2xl w-100">
+            
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Login</h3>
                 <p class="text-gray-500">Please sign in to your account.</p>
@@ -31,10 +40,13 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
                     </label>
 
                     <input
+                        id="email"
+                        name="email"
                         class="w-full text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="email"
                         autocomplete="email"
                         placeholder="mail@gmail.com"
+                        value={email}
                     />
                 </div>
 
@@ -44,6 +56,8 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
                     </label>
 
                     <input
+                        id="password"
+                        name="password"
                         class="w-full content-center text-base px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-400"
                         type="password"
                         autocomplete="current-password"
@@ -54,14 +68,15 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <input
-                            id="remember_me"
+                            id="rememberMe"
                             name="remember_me"
                             type="checkbox"
+                            checked={rememberMe}
                             class="h-4 w-4 bg-blue-500 focus:ring-blue-400 border-gray-300 rounded"
                         />
 
                         <label
-                            for="remember_me"
+                            for="rememberMe"
                             class="ml-2 block text-sm text-gray-800"
                         >
                             Recuerdame
@@ -78,12 +93,20 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
                     </div>
                 </div>
 
+                <!-- -----  Mensaje de resultado del formulario  ----- -->
+                <p
+                    id="formFeedback"
+                    class="text-sm text-center min-h-5"
+                    role="status"
+                ></p>
+
                 <div>
                     <button
+                        id="btnSubmit"
                         type="submit"
-                        class="w-full flex justify-center bg-green-400 hover:bg-green-500 text-gray-100 p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition ease-in duration-500"
+                        class="disabled:bg-gray-300 w-full flex justify-center bg-green-400 hover:bg-green-500 text-gray-100 p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition ease-in duration-500"
                     >
-                        Sign in
+                        Ingresar
                     </button>
                 </div>
             </div>
@@ -105,3 +128,112 @@ import AuthLayout from "@/src/layouts/AuthLayout.astro";
         </form>
     </div>
 </AuthLayout>
+
+
+<script>
+    
+    import { actions, isInputError } from "astro:actions";
+    import Swal from "sweetalert2";
+
+    /**
+     * ----------------------------------
+     * -----  `prepareLoginForm()`  -----
+     * ----------------------------------
+     * - prepara el formulario de login en cada carga del router
+     */
+    const prepareLoginForm = (): void => {
+        
+        //*  -----  referencias al HTML  -----
+
+        /** - `formulario de login` */
+        const form = document.querySelector("form") as HTMLFormElement | null;
+
+        /** - `botón de envío` */
+        const btnSubmit = document.getElementById(
+            "btnSubmit",
+        ) as HTMLButtonElement | null;
+
+        /** - `mensaje de resultado del formulario` */
+        const formFeedback = document.getElementById(
+            "formFeedback",
+        ) as HTMLParagraphElement | null;
+
+        //*  -----  si el formulario está completo, escuchar el envío  -----
+        if (form && btnSubmit && formFeedback) {
+            
+            //*  -----  escuchar el envío del formulario  -----
+            form.addEventListener("submit", async (event) => {
+                
+                //  -----  evitar el envío nativo del formulario  -----
+                event.preventDefault();
+
+                //  -----  limpiar el mensaje anterior  -----
+                formFeedback.textContent = "";
+
+                //  -----  desactivar el botón mientras se envía  -----
+                btnSubmit.setAttribute("disabled", "disabled");
+
+                /** - `datos escritos en el formulario` */
+                const formData = new FormData(form);
+
+                /** - `resultado de la acción de login` */
+                const { error } = await actions.loginUser(formData);
+
+                //  -----  reactivar el botón al terminar  -----
+                btnSubmit.removeAttribute("disabled");
+
+                //*  -----  si la acción devuelve un error, mostrarlo  -----
+                if (error) {
+                    
+                    //  -----  mostrar el error con SweetAlert  -----
+                    Swal.fire({
+                        title: "Error al ingresar",
+                        text: error.message,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+
+                    /** - `mensajes de los campos inválidos` */
+                    const fieldMessages = isInputError(error)
+                        ? Object.values(error.fields)
+                              .flat()
+                              .filter((message): message is string =>
+                                  Boolean(message),
+                              )
+                        : [];
+
+                    //  -----  marcar el mensaje como error  -----
+                    formFeedback.classList.add("text-red-500");
+
+                    //  -----  quitar el color de éxito  -----
+                    formFeedback.classList.remove("text-green-600");
+
+                    //  -----  mostrar el error de validación o el de la acción  -----
+                    formFeedback.textContent =
+                        fieldMessages.length > 0
+                            ? fieldMessages.join(". ")
+                            : error.message;
+
+                    //  -----  detener el envío  -----
+                    return;
+                }
+
+                //  -----  marcar el mensaje como éxito  -----
+                formFeedback.classList.add("text-green-600");
+
+                //  -----  quitar el color de error  -----
+                formFeedback.classList.remove("text-red-500");
+
+                //  -----  confirmar el inicio de sesión  -----
+                formFeedback.textContent = "Sesión iniciada";
+
+                //  -----  redirigir a la página protegida  -----
+                window.location.replace("/protected");
+            });
+        }
+    };
+
+    //  -----  preparar el formulario en cada carga del router  -----
+    document.addEventListener("astro:page-load", prepareLoginForm);
+
+</script>
