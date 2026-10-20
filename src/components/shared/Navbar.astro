@@ -28,7 +28,7 @@
                 <a href="/login"> Ingresar </a>
             </li>
 
-            <li class="font-semibold text-gray-700">
+            <li id="logout" class="font-semibold text-gray-700">
                 <a href="#"> Salir </a>
             </li>
 
@@ -87,3 +87,42 @@
         </ul>
     </div>
 </nav>
+
+<script>
+    
+    import { actions } from "astro:actions";
+
+    /**
+     * -------------------------------
+     * -----  `prepareLogout()`  -----
+     * -------------------------------
+     * - prepara el cierre de sesión en cada carga del router
+     */
+    const prepareLogout = (): void => {
+
+        /** - `elemento del menú para cerrar sesión` */
+        const logoutElement = document.querySelector(
+            "#logout",
+        ) as HTMLLIElement | null;
+
+        //  -----  si el elemento existe, escuchar el clic  -----
+        if (logoutElement) {
+            
+            //  -----  escuchar el clic en "Salir"  -----
+            logoutElement.addEventListener("click", async (event) => {
+                //  -----  evitar la navegación del enlace  -----
+                event.preventDefault();
+
+                //  -----  cerrar la sesión en Firebase  -----
+                await actions.logoutUser();
+
+                //  -----  redirigir al inicio  -----
+                window.location.href = "/";
+            });
+        }
+    };
+
+    //  -----  preparar el logout en cada carga del router  -----
+    document.addEventListener("astro:page-load", prepareLogout);
+
+</script>
