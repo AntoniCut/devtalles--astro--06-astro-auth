@@ -7,7 +7,7 @@
 import type { AstroCookies } from "astro";
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, type AuthError } from "firebase/auth";
 import { firebase } from "@/src/firebase/config";
 
 
@@ -30,10 +30,11 @@ export const registerUser = defineAction({
     handler: async (input, context) => {
 
         const { email, password } = input;
+        const { cookies } = context;
         const { auth } = firebase;
 
         //  -----  `maneja la cookie del correo según "recuérdame"`  -----
-        handleCookies(input, context.cookies);
+        handleCookies(input, cookies);
 
         try {
             //*  -----  creación del usuario  -----
@@ -56,9 +57,19 @@ export const registerUser = defineAction({
                 uid: userCredential.user.uid,
                 email: userCredential.user.email,
             };
-        } catch (error) {
-            console.error(error);
-            throw new Error("Error al crear el usuario");
+
+        } 
+        
+        catch (error) {
+            
+            const firebaseError = error as AuthError;
+
+            if (firebaseError.code === "auth/email-already-in-use") {
+                throw new Error("El correo electrónico ya está en uso");
+            }
+
+            throw new Error("Error al crear el usuario. Algo salió mal.");
+            
         }
 
     },

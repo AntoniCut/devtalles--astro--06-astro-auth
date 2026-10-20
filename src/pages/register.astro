@@ -163,7 +163,9 @@ const rememberMe = !!email;
 </AuthLayout>
 
 <script>
+    
     import { actions, isInputError } from "astro:actions";
+    import Swal from "sweetalert2";
 
     /**
      * -------------------------------------
@@ -189,6 +191,7 @@ const rememberMe = !!email;
 
         //*  -----  si el formulario está completo, escuchar el envío  -----
         if (form && btnSubmit && formFeedback) {
+            
             //*  -----  escuchar el envío del formulario  -----
             form.addEventListener("submit", async (event) => {
                 //  -----  evitar el envío nativo del formulario  -----
@@ -212,8 +215,20 @@ const rememberMe = !!email;
                 //  -----  reactivar el botón al terminar  -----
                 btnSubmit.removeAttribute("disabled");
 
-                //  -----  si la acción devuelve un error, mostrarlo  -----
+
+                //*  -----  si la acción devuelve un error, mostrarlo  -----
+                
                 if (error) {
+
+                    //  -----  sweetalert2  -----
+
+                    Swal.fire({
+                        title: "¡Ups! Algo salió mal. Credenciales inválidas.",
+                        text: error.message,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
                         ? Object.values(error.fields)
@@ -239,6 +254,8 @@ const rememberMe = !!email;
                     return;
                 }
 
+                //*  -----  si la acción devuelve un éxito, mostrarlo  -----
+                
                 //  -----  marcar el mensaje como éxito  -----
                 formFeedback.classList.add("text-green-600");
 
@@ -247,6 +264,11 @@ const rememberMe = !!email;
 
                 //  -----  confirmar el registro  -----
                 formFeedback.textContent = "Registro enviado";
+
+                //*  -----  Redifrigir a otra pagina  -----
+                window.location.replace("/protected");
+
+
             });
         }
     };
