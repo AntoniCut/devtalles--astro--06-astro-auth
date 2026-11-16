@@ -50,13 +50,9 @@ export const loginUser = defineAction({
                 uid: userCredential.user.uid,
                 email: userCredential.user.email,
             };
-
-        } 
-        
-        catch (error) {
-            
+        } catch (error) {
             //*  -----  si Firebase rechaza las credenciales  -----
-            
+
             /** - `error tipado de Firebase` */
             const firebaseError = error as AuthError;
 
@@ -79,7 +75,6 @@ export const loginUser = defineAction({
         }
 
     },
-    
 });
 
 

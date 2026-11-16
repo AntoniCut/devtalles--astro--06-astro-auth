@@ -36,6 +36,7 @@ const rememberMe = !!email;
 
             <!-- -----  Contenido del formulario  ----- -->
             <div class="space-y-5">
+                
                 <!-- -----  Campo de nombre  ----- -->
                 <div class="space-y-2">
                     <label
@@ -163,7 +164,6 @@ const rememberMe = !!email;
 </AuthLayout>
 
 <script>
-    
     import { actions, isInputError } from "astro:actions";
     import Swal from "sweetalert2";
 
@@ -191,7 +191,6 @@ const rememberMe = !!email;
 
         //*  -----  si el formulario está completo, escuchar el envío  -----
         if (form && btnSubmit && formFeedback) {
-            
             //*  -----  escuchar el envío del formulario  -----
             form.addEventListener("submit", async (event) => {
                 //  -----  evitar el envío nativo del formulario  -----
@@ -215,11 +214,9 @@ const rememberMe = !!email;
                 //  -----  reactivar el botón al terminar  -----
                 btnSubmit.removeAttribute("disabled");
 
-
                 //*  -----  si la acción devuelve un error, mostrarlo  -----
-                
-                if (error) {
 
+                if (error) {
                     //  -----  sweetalert2  -----
 
                     Swal.fire({
@@ -255,7 +252,7 @@ const rememberMe = !!email;
                 }
 
                 //*  -----  si la acción devuelve un éxito, mostrarlo  -----
-                
+
                 //  -----  marcar el mensaje como éxito  -----
                 formFeedback.classList.add("text-green-600");
 
@@ -267,8 +264,6 @@ const rememberMe = !!email;
 
                 //*  -----  Redifrigir a otra pagina  -----
                 window.location.replace("/protected");
-
-
             });
         }
     };
