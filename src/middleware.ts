@@ -23,8 +23,11 @@ const privateRoutes = ["/protected"];
  * - usuarios y contraseñas de autenticación
  */
 const authUsers = {
-    user: "admin3",
-    pass: "admin3",
+    
+    /** - `usuario de autenticación` */
+    user: "admin",
+    /** - `contraseña de autenticación` */
+    pass: "admin",
 };
 
 /**
@@ -77,6 +80,7 @@ const checkLocalAuth = (authHeader: string, next: MiddlewareNext) => {
         //console.log('\n\n\nusername', username);
         //console.log('password', password);
 
+        //  -----  `Obtener el usuario y contraseña de autenticación`  -----
         const { user, pass } = authUsers;
 
         //*  -----  `Si el username y password son correctos, continuar`  -----
