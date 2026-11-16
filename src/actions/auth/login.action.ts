@@ -1,0 +1,116 @@
+/*
+    *  --------------------------------------------------------------------  *
+    *  -----  login.action.ts  --  /src/actions/auth/login.action.ts  -----  *
+    *  --------------------------------------------------------------------  *
+ */
+
+import type { AstroCookies } from "astro";
+import { defineAction } from "astro:actions";
+import { z } from "astro/zod";
+import { signInWithEmailAndPassword, type AuthError } from "firebase/auth";
+import { firebase } from "@/src/firebase/config";
+
+
+/**
+ * --------------------------------------------
+ * -----  `loginUser = defineAction({})`  -----
+ * --------------------------------------------
+ * - valida las credenciales e inicia sesión en Firebase
+ */
+export const loginUser = defineAction({
+    accept: "form",
+    input: z.object({
+        email: z.email(),
+        password: z.string().min(6),
+        remember_me: z.boolean().optional(),
+    }),
+
+    /** - `devuelve los datos ya validados` */
+    handler: async (input, context) => {
+
+        const { email, password } = input;
+        const { cookies } = context;
+        const { auth } = firebase;
+
+        //  -----  maneja la cookie del correo según "recuérdame"  -----
+        handleCookies(input, cookies);
+
+        try {
+            /** - `credenciales del usuario autenticado` */
+            const userCredential = await signInWithEmailAndPassword(
+                auth,
+                email,
+                password,
+            );
+
+            //  -----  devolver solo datos serializables (POJO)  -----
+            return {
+                ok: true,
+                message: "Sesión iniciada",
+                uid: userCredential.user.uid,
+                email: userCredential.user.email,
+            };
+
+        } 
+        
+        catch (error) {
+            
+            //*  -----  si Firebase rechaza las credenciales  -----
+            
+            /** - `error tipado de Firebase` */
+            const firebaseError = error as AuthError;
+
+            //  -----  si las credenciales no son válidas  -----
+            if (
+                firebaseError.code === "auth/invalid-credential" ||
+                firebaseError.code === "auth/user-not-found" ||
+                firebaseError.code === "auth/wrong-password"
+            )
+                //  -----  informar credenciales incorrectas  -----
+                throw new Error("Correo o contraseña incorrectos");
+
+            //  -----  si hay demasiados intentos fallidos  -----
+            if (firebaseError.code === "auth/too-many-requests")
+                //  -----  pedir que se intente más tarde  -----
+                throw new Error("Demasiados intentos. Inténtalo más tarde.");
+
+            //  -----  devolver un error genérico  -----
+            throw new Error("No se pudo iniciar sesión. Algo salió mal.");
+        }
+
+    },
+    
+});
+
+
+
+/**
+ * ---------------------------------------------
+ * -----  `handleCookies(input, cookies)`  -----
+ * ---------------------------------------------
+ * - función que guarda o elimina la cookie del correo según "recuérdame"
+ */
+const handleCookies = (
+    input: { email: string; remember_me?: boolean },
+    cookies: AstroCookies,
+): void => {
+
+    const { email, remember_me } = input;
+
+    /** - `milisegundos que tiene un año` */
+    const msPerYear = 1000 * 60 * 60 * 24 * 365;
+
+    //  -----  si marcó recordar, guardar el correo en una cookie  -----
+    if (remember_me)
+        cookies.set("email", email, {
+            expires: new Date(Date.now() + msPerYear),
+            path: "/",
+        });
+
+    //  -----  si no lo marcó, eliminar la cookie del correo  -----
+    else
+        cookies.delete("email", {
+            path: "/",
+        });
+
+};

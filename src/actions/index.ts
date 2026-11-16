@@ -6,6 +6,7 @@
 
 import { registerUser } from "@/src/actions/auth/register.action";
 import { logoutUser } from "@/src/actions/auth/logout.action";
+import { loginUser } from "@/src/actions/auth/login.action";
 
 
 /**
@@ -18,4 +19,5 @@ export const server = {
     //  -----  auth  -----
     registerUser,
     logoutUser,
+    loginUser,
 };
