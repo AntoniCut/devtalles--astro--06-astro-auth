@@ -9,6 +9,8 @@
 import AuthLayout from "@/src/layouts/AuthLayout.astro";
 
 
+//*  -----  Cookies  -----
+
 /** - `valor de la cookie 'email'` */
 const email = Astro.cookies.get("email")?.value ?? "";
 
@@ -25,9 +27,12 @@ const rememberMe = !!email;
     titleAuth="Register"
     descriptionAuth="Please register to your account."
 >
+    
     <div class="flex justify-center self-center z-10">
+        
         <!-- -----  Formulario de Registro  ----- -->
         <form class="p-12 bg-white mx-auto rounded-2xl w-100">
+            
             <!-- -----  Encabezado del formulario  ----- -->
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Register</h3>
@@ -39,6 +44,7 @@ const rememberMe = !!email;
                 
                 <!-- -----  Campo de nombre  ----- -->
                 <div class="space-y-2">
+                    
                     <label
                         for="name"
                         class="text-sm font-medium text-gray-700 tracking-wide"
@@ -54,10 +60,12 @@ const rememberMe = !!email;
                         autocomplete="name"
                         placeholder="Tu nombre..."
                     />
+
                 </div>
 
                 <!-- -----  Campo de email  ----- -->
                 <div class="space-y-2">
+                    
                     <label
                         for="email"
                         class="text-sm font-medium text-gray-700 tracking-wide"
@@ -78,6 +86,7 @@ const rememberMe = !!email;
 
                 <!-- -----  Campo de contraseña  ----- -->
                 <div class="space-y-2">
+                    
                     <label
                         for="password"
                         class="mb-5 text-sm font-medium text-gray-700 tracking-wide"
@@ -93,11 +102,14 @@ const rememberMe = !!email;
                         autocomplete="new-password"
                         placeholder="Enter your password"
                     />
+
                 </div>
 
                 <!-- -----  Campo de recordarme  ----- -->
                 <div class="flex items-center justify-between">
+                    
                     <div class="flex items-center">
+                        
                         <input
                             id="rememberMe"
                             name="remember_me"
@@ -112,6 +124,7 @@ const rememberMe = !!email;
                         >
                             Recuerdame
                         </label>
+
                     </div>
 
                     <!-- -----  Enlace de inicio de sesión  ----- -->
@@ -123,7 +136,9 @@ const rememberMe = !!email;
                             ¿Ya tienes una cuenta? Inicia sesión
                         </a>
                     </div>
+
                 </div>
+
 
                 <!-- -----  Mensaje de resultado del formulario  ----- -->
                 <p
@@ -144,6 +159,7 @@ const rememberMe = !!email;
                 </div>
             </div>
 
+
             <!-- -----  Pie de página del formulario  ----- -->
             <footer class="pt-5 text-center text-gray-400 text-xs">
                 <span>
@@ -163,7 +179,9 @@ const rememberMe = !!email;
     </div>
 </AuthLayout>
 
+
 <script>
+    
     import { actions, isInputError } from "astro:actions";
     import Swal from "sweetalert2";
 
@@ -174,36 +192,41 @@ const rememberMe = !!email;
      * - prepara el formulario de registro en cada carga del router
      */
     const prepareRegisterForm = (): void => {
+                
         //*  -----  referencias al HTML  -----
 
         /** - `formulario de registro` */
-        const form = document.querySelector("form") as HTMLFormElement | null;
+        const $form = document.querySelector(
+            'form'
+        ) as HTMLFormElement | null;
 
         /** - `botón de envío` */
-        const btnSubmit = document.getElementById(
-            "btnSubmit",
+        const $btnSubmit = document.getElementById(
+            'btnSubmit'
         ) as HTMLButtonElement | null;
 
         /** - `mensaje de resultado del formulario` */
-        const formFeedback = document.getElementById(
+        const $formFeedback = document.getElementById(
             "formFeedback",
         ) as HTMLParagraphElement | null;
 
         //*  -----  si el formulario está completo, escuchar el envío  -----
-        if (form && btnSubmit && formFeedback) {
+        if ($form && $btnSubmit && $formFeedback) {
+            
             //*  -----  escuchar el envío del formulario  -----
-            form.addEventListener("submit", async (event) => {
+            $form.addEventListener("submit", async (event) => {
+                
                 //  -----  evitar el envío nativo del formulario  -----
                 event.preventDefault();
 
                 //  -----  limpiar el mensaje anterior  -----
-                formFeedback.textContent = "";
+                $formFeedback.textContent = "";
 
                 //  -----  desactivar el botón mientras se envía  -----
-                btnSubmit.setAttribute("disabled", "disabled");
+                $btnSubmit.setAttribute("disabled", "disabled");
 
                 /** - `datos escritos en el formulario` */
-                const formData = new FormData(form);
+                const formData = new FormData($form);
 
                 //console.log('formData', formData);
 
@@ -212,13 +235,13 @@ const rememberMe = !!email;
                 //console.log("data => ", data?.valueOf);
 
                 //  -----  reactivar el botón al terminar  -----
-                btnSubmit.removeAttribute("disabled");
+                $btnSubmit.removeAttribute("disabled");
 
                 //*  -----  si la acción devuelve un error, mostrarlo  -----
 
                 if (error) {
-                    //  -----  sweetalert2  -----
-
+                    
+                    //*  -----  mostrar el mensaje de error con sweetalert2  -----
                     Swal.fire({
                         title: "¡Ups! Algo salió mal. Credenciales inválidas.",
                         text: error.message,
@@ -236,13 +259,13 @@ const rememberMe = !!email;
                         : [];
 
                     //  -----  marcar el mensaje como error  -----
-                    formFeedback.classList.add("text-red-500");
+                    $formFeedback.classList.add("text-red-500");
 
                     //  -----  quitar el color de éxito  -----
-                    formFeedback.classList.remove("text-green-600");
+                    $formFeedback.classList.remove("text-green-600");
 
                     //  -----  mostrar el error de validación o el de la acción  -----
-                    formFeedback.textContent =
+                    $formFeedback.textContent =
                         fieldMessages.length > 0
                             ? fieldMessages.join(". ")
                             : error.message;
@@ -254,20 +277,24 @@ const rememberMe = !!email;
                 //*  -----  si la acción devuelve un éxito, mostrarlo  -----
 
                 //  -----  marcar el mensaje como éxito  -----
-                formFeedback.classList.add("text-green-600");
+                $formFeedback.classList.add("text-green-600");
 
                 //  -----  quitar el color de error  -----
-                formFeedback.classList.remove("text-red-500");
+                $formFeedback.classList.remove("text-red-500");
 
                 //  -----  confirmar el registro  -----
-                formFeedback.textContent = "Registro enviado";
+                $formFeedback.textContent = "Registro enviado";
 
                 //*  -----  Redifrigir a otra pagina  -----
                 window.location.replace("/protected");
+
             });
+
         }
+
     };
 
-    //  -----  preparar el formulario en cada carga del router  -----
+    //*  -----  preparar el formulario en cada carga del router  -----
     document.addEventListener("astro:page-load", prepareRegisterForm);
+
 </script>

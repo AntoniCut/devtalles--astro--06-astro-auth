@@ -8,8 +8,6 @@ import type { AstroCookies } from "astro";
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import {
-
-
     createUserWithEmailAndPassword,
     updateProfile,
     type AuthError,
@@ -35,14 +33,20 @@ export const registerUser = defineAction({
     /** - `devuelve los datos ya validados` */
     handler: async (input, context) => {
 
+        //  -----  desestructuración de los datos del formulario  -----
         const { email, password } = input;
+        
+        //  -----  desestructuración de los datos del contexto  -----
         const { cookies } = context;
+        
+        //  -----  obtención de la instancia de autenticación de Firebase  -----
         const { auth } = firebase;
 
         //  -----  `maneja la cookie del correo según "recuérdame"`  -----
         handleCookies(input, cookies);
 
         try {
+            
             //*  -----  creación del usuario  -----
 
             /** - `credenciales del usuario creado en Firebase` */
@@ -51,7 +55,7 @@ export const registerUser = defineAction({
                 email,
                 password,
             );
-
+            
             //*  -----  actualizar el nombre (displayName)  -----
 
             //*  -----  verificar el correo electronico  -----
@@ -63,9 +67,12 @@ export const registerUser = defineAction({
                 uid: userCredential.user.uid,
                 email: userCredential.user.email,
             };
-        } catch (error) {
-            const firebaseError = error as AuthError;
 
+        } catch (error) {
+            
+            /** - `error de Firebase` */
+            const firebaseError = error as AuthError;
+            
             if (firebaseError.code === "auth/email-already-in-use") {
                 throw new Error("El correo electrónico ya está en uso");
             }
