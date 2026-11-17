@@ -7,11 +7,7 @@
 import type { AstroCookies } from "astro";
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
-import {
-    createUserWithEmailAndPassword,
-    updateProfile,
-    type AuthError,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, type AuthError,} from "firebase/auth";
 import { firebase } from "@/src/firebase/config";
 
 
@@ -22,12 +18,24 @@ import { firebase } from "@/src/firebase/config";
  * - valida los datos del formulario de registro
  */
 export const registerUser = defineAction({
+    
     accept: "form",
+    
     input: z.object({
-        name: z.string().min(2),
-        email: z.email(),
-        password: z.string().min(6),
+        
+        name: z
+            .string({ message: "El nombre es obligatorio" })
+            .min(2, { message: "El nombre debe tener al menos 2 caracteres" }),
+        
+        email: z.email({ message: "Ingresá un correo electrónico válido" }),
+        
+        password: z
+            .string({ message: "La contraseña es obligatoria" })
+            .min(6, {
+                message: "La contraseña debe tener al menos 6 caracteres",
+            }),
         remember_me: z.boolean().optional(),
+
     }),
 
     /** - `devuelve los datos ya validados` */
@@ -74,7 +82,7 @@ export const registerUser = defineAction({
             const firebaseError = error as AuthError;
             
             if (firebaseError.code === "auth/email-already-in-use") {
-                throw new Error("El correo electrónico ya está en uso");
+                throw new Error("Correo electronico ya esta en uso");
             }
 
             throw new Error("Error al crear el usuario. Algo salió mal.");
@@ -92,7 +100,10 @@ export const registerUser = defineAction({
  * - función que guarda o elimina la cookie del correo según "recuérdame"
  */
 const handleCookies = (
-    input: { email: string; remember_me?: boolean },
+    input: { 
+        email: string; 
+        remember_me?: boolean 
+    },
     cookies: AstroCookies,
 ): void => {
 

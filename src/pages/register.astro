@@ -240,14 +240,6 @@ const rememberMe = !!email;
                 //*  -----  si la acción devuelve un error, mostrarlo  -----
 
                 if (error) {
-                    
-                    //*  -----  mostrar el mensaje de error con sweetalert2  -----
-                    Swal.fire({
-                        title: "¡Ups! Algo salió mal. Credenciales inválidas.",
-                        text: error.message,
-                        icon: "error",
-                        confirmButtonText: "OK",
-                    });
 
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
@@ -258,6 +250,36 @@ const rememberMe = !!email;
                               )
                         : [];
 
+                    /** - `mensaje del error del servidor (p. ej. correo duplicado)` */
+                    const EMAIL_ALREADY_IN_USE = "Correo electronico ya esta en uso";
+                    
+                    /** - `verifica si el error es de correo duplicado` */
+                    const isEmailInUse =
+                        !isInputError(error) &&
+                        error.message === EMAIL_ALREADY_IN_USE;
+
+                    /** - `texto que verá el usuario en el modal` */
+                    const swalText = isInputError(error)
+                        ? fieldMessages.join(". ")
+                        : isEmailInUse
+                          ? EMAIL_ALREADY_IN_USE
+                          : error.message;
+
+                    /** - `título del modal según el tipo de error` */
+                    const swalTitle = isEmailInUse
+                        ? "¡Ups! Algo salió mal."
+                        : isInputError(error)
+                          ? "Revisá los datos del formulario"
+                          : "¡Ups! Algo salió mal.";
+
+                    //*  -----  mostrar el mensaje de error con sweetalert2  -----
+                    Swal.fire({
+                        title: swalTitle,
+                        text: swalText,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+
                     //  -----  marcar el mensaje como error  -----
                     $formFeedback.classList.add("text-red-500");
 
@@ -265,10 +287,7 @@ const rememberMe = !!email;
                     $formFeedback.classList.remove("text-green-600");
 
                     //  -----  mostrar el error de validación o el de la acción  -----
-                    $formFeedback.textContent =
-                        fieldMessages.length > 0
-                            ? fieldMessages.join(". ")
-                            : error.message;
+                    $formFeedback.textContent = swalText;
 
                     //  -----  detener el envío  -----
                     return;
