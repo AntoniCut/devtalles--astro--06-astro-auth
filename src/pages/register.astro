@@ -175,8 +175,11 @@ const rememberMe = !!email;
                     </a>
                 </span>
             </footer>
+
         </form>
+
     </div>
+
 </AuthLayout>
 
 
@@ -230,7 +233,7 @@ const rememberMe = !!email;
 
                 //console.log('formData', formData);
 
-                /** - `resultado de la acción de registro` */
+                //*  ----- resultado de la acción de registro  -----
                 const { data, error } = await actions.registerUser(formData);
                 //console.log("data => ", data?.valueOf);
 
