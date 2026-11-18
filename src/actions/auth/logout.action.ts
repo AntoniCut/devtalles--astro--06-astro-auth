@@ -17,8 +17,10 @@ import { firebase } from "@/src/firebase/config";
  */
 export const logoutUser = defineAction({
     
-    /** - `cierra la sesión y devuelve el resultado` */
-    handler: async () => {
+    accept: 'json',
+
+    //*  -----  cierra la sesión y devuelve el resultado  -----
+    handler: async (_, context) => {
 
         /** - `instancia de autenticación de Firebase` */
         const { auth } = firebase;

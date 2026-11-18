@@ -16,7 +16,6 @@ import { loginUser } from "@/src/actions/auth/login.action";
  * - actions server
  */
 export const server = {
-    //  -----  auth  -----
     registerUser,
     logoutUser,
     loginUser,

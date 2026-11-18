@@ -38,7 +38,7 @@ export const registerUser = defineAction({
 
     }),
 
-    /** - `devuelve los datos ya validados` */
+    //*  -----  devuelve los datos ya validados  -----
     handler: async (input, context) => {
 
         //  -----  desestructuración de los datos del formulario  -----
