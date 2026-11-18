@@ -4,7 +4,6 @@
     *  ----------------------------------------------------  *
  */
 
-
 import { initializeApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
@@ -19,7 +18,6 @@ import { getAuth } from "firebase/auth";
  * - https://firebase.google.com/docs/web/setup#available-libraries
  */
 const firebaseConfig: FirebaseOptions = {
-    
     /** - `clave pública de la API Web de Firebase` */
     apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
 
@@ -47,7 +45,6 @@ const app = initializeApp(firebaseConfig);
 
 /** - `obtiene la instancia de autenticación de Firebase` */
 const auth = getAuth(app);
-
 
 /**
  * -----------------------------

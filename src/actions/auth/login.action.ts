@@ -19,17 +19,27 @@ import { firebase } from "@/src/firebase/config";
  */
 export const loginUser = defineAction({
     accept: "form",
+
     input: z.object({
-        email: z.email(),
-        password: z.string().min(6),
+        email: z.email({ message: "Ingresá un correo electrónico válido" }),
+
+        password: z.string({ message: "La contraseña es obligatoria" }).min(6, {
+            message: "La contraseña debe tener al menos 6 caracteres",
+        }),
+
         remember_me: z.boolean().optional(),
     }),
 
     /** - `devuelve los datos ya validados` */
     handler: async (input, context) => {
 
+        //  -----  desestructuración de los datos del formulario  -----
         const { email, password } = input;
+
+        //  -----  desestructuración de los datos del contexto  -----
         const { cookies } = context;
+
+        //  -----  obtención de la instancia de autenticación de Firebase  -----
         const { auth } = firebase;
 
         //  -----  maneja la cookie del correo según "recuérdame"  -----

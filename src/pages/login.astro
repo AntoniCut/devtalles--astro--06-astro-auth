@@ -24,8 +24,10 @@ const rememberMe = !!email;
     descriptionAuth="Please sign in to your account."
 >
     <div class="flex justify-center self-center z-10">
+        
         <!-- -----  Formulario de Login  ----- -->
         <form method="post" class="p-12 bg-white mx-auto rounded-2xl w-100">
+            
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Login</h3>
                 <p class="text-gray-500">Please sign in to your account.</p>
@@ -36,7 +38,7 @@ const rememberMe = !!email;
                 
                 <!-- -----  Campo de email  ----- -->
                 <div class="space-y-2">
-                    <label 
+                    <label
                         for="email"
                         class="text-sm font-medium text-gray-700 tracking-wide"
                     >
@@ -56,9 +58,10 @@ const rememberMe = !!email;
 
                 <!-- -----  Campo de contraseña  ----- -->
                 <div class="space-y-2">
-                    <label 
+                    <label
                         for="password"
-                        class="mb-5 text-sm font-medium text-gray-700 tracking-wide">
+                        class="mb-5 text-sm font-medium text-gray-700 tracking-wide"
+                    >
                         Password
                     </label>
 
@@ -119,6 +122,7 @@ const rememberMe = !!email;
                         Ingresar
                     </button>
                 </div>
+
             </div>
 
             <!-- -----  Pie de página del formulario  ----- -->
@@ -136,11 +140,16 @@ const rememberMe = !!email;
                     </a>
                 </span>
             </div>
+
         </form>
+
     </div>
+
 </AuthLayout>
 
+
 <script>
+    
     import { actions, isInputError } from "astro:actions";
     import Swal from "sweetalert2";
 
@@ -151,6 +160,7 @@ const rememberMe = !!email;
      * - prepara el formulario de login en cada carga del router
      */
     const prepareLoginForm = (): void => {
+        
         //*  -----  referencias al HTML  -----
 
         /** - `formulario de login` */
@@ -168,8 +178,10 @@ const rememberMe = !!email;
 
         //*  -----  si el formulario está completo, escuchar el envío  -----
         if (form && btnSubmit && formFeedback) {
+            
             //*  -----  escuchar el envío del formulario  -----
             form.addEventListener("submit", async (event) => {
+                
                 //  -----  evitar el envío nativo del formulario  -----
                 event.preventDefault();
 
@@ -190,14 +202,7 @@ const rememberMe = !!email;
 
                 //*  -----  si la acción devuelve un error, mostrarlo  -----
                 if (error) {
-                    //  -----  mostrar el error con SweetAlert  -----
-                    Swal.fire({
-                        title: "Error al ingresar",
-                        text: error.message,
-                        icon: "error",
-                        confirmButtonText: "OK",
-                    });
-
+                    
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
                         ? Object.values(error.fields)
@@ -207,6 +212,37 @@ const rememberMe = !!email;
                               )
                         : [];
 
+                    /** - `mensaje del error del servidor (p. ej. correo duplicado)` */
+                    const EMAIL_ALREADY_IN_USE =
+                        "Correo electronico ya esta en uso";
+
+                    /** - `verifica si el error es de correo duplicado` */
+                    const isEmailInUse =
+                        !isInputError(error) &&
+                        error.message === EMAIL_ALREADY_IN_USE;
+
+                    /** - `texto que verá el usuario en el modal` */
+                    const swalText = isInputError(error)
+                        ? fieldMessages.join(". ")
+                        : isEmailInUse
+                          ? EMAIL_ALREADY_IN_USE
+                          : error.message;
+
+                    /** - `título del modal según el tipo de error` */
+                    const swalTitle = isEmailInUse
+                        ? "¡Ups! Algo salió mal."
+                        : isInputError(error)
+                          ? "Revisá los datos del formulario"
+                          : "¡Ups! Algo salió mal.";
+
+                    //*  -----  mostrar el mensaje de error con sweetalert2  -----
+                    Swal.fire({
+                        title: swalTitle,
+                        text: swalText,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+
                     //  -----  marcar el mensaje como error  -----
                     formFeedback.classList.add("text-red-500");
 
@@ -214,10 +250,7 @@ const rememberMe = !!email;
                     formFeedback.classList.remove("text-green-600");
 
                     //  -----  mostrar el error de validación o el de la acción  -----
-                    formFeedback.textContent =
-                        fieldMessages.length > 0
-                            ? fieldMessages.join(". ")
-                            : error.message;
+                    formFeedback.textContent = swalText;
 
                     //  -----  detener el envío  -----
                     return;
@@ -234,10 +267,12 @@ const rememberMe = !!email;
 
                 //  -----  redirigir a la página protegida  -----
                 window.location.replace("/protected");
+
             });
         }
     };
 
     //  -----  preparar el formulario en cada carga del router  -----
     document.addEventListener("astro:page-load", prepareLoginForm);
+    
 </script>

@@ -10,7 +10,6 @@
 
 <!-- component -->
 <nav class="flex justify-between px-20 py-10 items-center bg-white">
-    
     <h1 class="text-xl text-gray-800 font-bold">
         <a href="/">Auth Astro App</a>
     </h1>
@@ -90,7 +89,6 @@
 </nav>
 
 <script>
-    
     import { actions } from "astro:actions";
 
     /**
@@ -100,7 +98,6 @@
      * - prepara el cierre de sesión en cada carga del router
      */
     const prepareLogout = (): void => {
-        
         /** - `elemento del menú para cerrar sesión` */
         const $logoutElement = document.querySelector(
             "#logout",
@@ -108,23 +105,23 @@
 
         //  -----  si el elemento existe, escuchar el clic  -----
         if ($logoutElement) {
-            
             //  -----  escuchar el clic en "Salir"  -----
-            $logoutElement.addEventListener("click", async (event: MouseEvent) => {
-                
-                //  -----  evitar la navegación del enlace  -----
-                event.preventDefault();
+            $logoutElement.addEventListener(
+                "click",
+                async (event: MouseEvent) => {
+                    //  -----  evitar la navegación del enlace  -----
+                    event.preventDefault();
 
-                //*  -----  cerrar la sesión en Firebase  -----
-                await actions.logoutUser();
+                    //*  -----  cerrar la sesión en Firebase  -----
+                    await actions.logoutUser();
 
-                //  -----  redirigir al inicio  -----
-                window.location.href = "/";
-            });
+                    //  -----  redirigir al inicio  -----
+                    window.location.href = "/";
+                },
+            );
         }
     };
 
     //  -----  preparar el logout en cada carga del router  -----
     document.addEventListener("astro:page-load", prepareLogout);
-
 </script>

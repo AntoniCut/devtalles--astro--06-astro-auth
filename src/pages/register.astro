@@ -27,12 +27,9 @@ const rememberMe = !!email;
     titleAuth="Register"
     descriptionAuth="Please register to your account."
 >
-    
     <div class="flex justify-center self-center z-10">
-        
         <!-- -----  Formulario de Registro  ----- -->
         <form class="p-12 bg-white mx-auto rounded-2xl w-100">
-            
             <!-- -----  Encabezado del formulario  ----- -->
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Register</h3>
@@ -41,10 +38,8 @@ const rememberMe = !!email;
 
             <!-- -----  Contenido del formulario  ----- -->
             <div class="space-y-5">
-                
                 <!-- -----  Campo de nombre  ----- -->
                 <div class="space-y-2">
-                    
                     <label
                         for="name"
                         class="text-sm font-medium text-gray-700 tracking-wide"
@@ -60,12 +55,10 @@ const rememberMe = !!email;
                         autocomplete="name"
                         placeholder="Tu nombre..."
                     />
-
                 </div>
 
                 <!-- -----  Campo de email  ----- -->
                 <div class="space-y-2">
-                    
                     <label
                         for="email"
                         class="text-sm font-medium text-gray-700 tracking-wide"
@@ -86,7 +79,6 @@ const rememberMe = !!email;
 
                 <!-- -----  Campo de contraseña  ----- -->
                 <div class="space-y-2">
-                    
                     <label
                         for="password"
                         class="mb-5 text-sm font-medium text-gray-700 tracking-wide"
@@ -102,14 +94,11 @@ const rememberMe = !!email;
                         autocomplete="new-password"
                         placeholder="Enter your password"
                     />
-
                 </div>
 
                 <!-- -----  Campo de recordarme  ----- -->
                 <div class="flex items-center justify-between">
-                    
                     <div class="flex items-center">
-                        
                         <input
                             id="rememberMe"
                             name="remember_me"
@@ -124,7 +113,6 @@ const rememberMe = !!email;
                         >
                             Recuerdame
                         </label>
-
                     </div>
 
                     <!-- -----  Enlace de inicio de sesión  ----- -->
@@ -136,9 +124,7 @@ const rememberMe = !!email;
                             ¿Ya tienes una cuenta? Inicia sesión
                         </a>
                     </div>
-
                 </div>
-
 
                 <!-- -----  Mensaje de resultado del formulario  ----- -->
                 <p
@@ -159,7 +145,6 @@ const rememberMe = !!email;
                 </div>
             </div>
 
-
             <!-- -----  Pie de página del formulario  ----- -->
             <footer class="pt-5 text-center text-gray-400 text-xs">
                 <span>
@@ -175,16 +160,11 @@ const rememberMe = !!email;
                     </a>
                 </span>
             </footer>
-
         </form>
-
     </div>
-
 </AuthLayout>
 
-
 <script>
-    
     import { actions, isInputError } from "astro:actions";
     import Swal from "sweetalert2";
 
@@ -195,17 +175,14 @@ const rememberMe = !!email;
      * - prepara el formulario de registro en cada carga del router
      */
     const prepareRegisterForm = (): void => {
-                
         //*  -----  referencias al HTML  -----
 
         /** - `formulario de registro` */
-        const $form = document.querySelector(
-            'form'
-        ) as HTMLFormElement | null;
+        const $form = document.querySelector("form") as HTMLFormElement | null;
 
         /** - `botón de envío` */
         const $btnSubmit = document.getElementById(
-            'btnSubmit'
+            "btnSubmit",
         ) as HTMLButtonElement | null;
 
         /** - `mensaje de resultado del formulario` */
@@ -215,10 +192,8 @@ const rememberMe = !!email;
 
         //*  -----  si el formulario está completo, escuchar el envío  -----
         if ($form && $btnSubmit && $formFeedback) {
-            
             //*  -----  escuchar el envío del formulario  -----
             $form.addEventListener("submit", async (event) => {
-                
                 //  -----  evitar el envío nativo del formulario  -----
                 event.preventDefault();
 
@@ -243,7 +218,7 @@ const rememberMe = !!email;
                 //*  -----  si la acción devuelve un error, mostrarlo  -----
 
                 if (error) {
-
+                    
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
                         ? Object.values(error.fields)
@@ -254,8 +229,9 @@ const rememberMe = !!email;
                         : [];
 
                     /** - `mensaje del error del servidor (p. ej. correo duplicado)` */
-                    const EMAIL_ALREADY_IN_USE = "Correo electronico ya esta en uso";
-                    
+                    const EMAIL_ALREADY_IN_USE =
+                        "Correo electronico ya esta en uso";
+
                     /** - `verifica si el error es de correo duplicado` */
                     const isEmailInUse =
                         !isInputError(error) &&
@@ -309,14 +285,10 @@ const rememberMe = !!email;
 
                 //*  -----  Redifrigir a otra pagina  -----
                 window.location.replace("/protected");
-
             });
-
         }
-
     };
 
     //*  -----  preparar el formulario en cada carga del router  -----
     document.addEventListener("astro:page-load", prepareRegisterForm);
-
 </script>

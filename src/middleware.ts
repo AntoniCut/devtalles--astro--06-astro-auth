@@ -23,7 +23,6 @@ const privateRoutes = ["/protected"];
  * - usuarios y contraseñas de autenticación
  */
 const authUsers = {
-    
     /** - `usuario de autenticación` */
     user: "admin",
     /** - `contraseña de autenticación` */

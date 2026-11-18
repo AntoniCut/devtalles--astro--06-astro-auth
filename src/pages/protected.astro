@@ -12,49 +12,43 @@ import { firebase } from "@/src/firebase/config";
 
 /** - `obtiene el usuario autenticado en Firebase` */
 const firebaseUser = firebase.auth.currentUser;
-console.log('\n\nfirebaseUser =>\n', firebaseUser);
+console.log("\n\nfirebaseUser =>\n", firebaseUser);
 
-//  -----  si el usuario no esta autenticado === null, redirige a la pagina de login  ----- 
+//  -----  si el usuario no esta autenticado === null, redirige a la pagina de login  -----
 if (!firebaseUser) {
     return Astro.redirect("/login");
 }
 
-//  -----  obtiene los datos del usuario autenticado  ----- 
+//  -----  obtiene los datos del usuario autenticado  -----
 const { displayName, email, emailVerified, photoURL } = firebaseUser;
 
-//  -----  obtiene el nombre del usuario  ----- 
+//  -----  obtiene el nombre del usuario  -----
 const name = displayName ?? "No display Name";
 
 ---
 
 <Layout>
-    
     <header class="bg-gray-800 text-white mb-4 p-4">
         <h1 class="text-3xl text-center">Página Protegida</h1>
     </header>
-    
 
     <!-- component -->
     <div class="bg-gray-200 rounded-xl font-sans h-[500px] w-full flex flex-row justify-center items-center">
-        
         <!--  -----  card del usuario  -----  -->
         <div class="card w-96 mx-auto bg-white shadow-xl hover:shadow rounded-3xl">
-            
-            {
-                photoURL ? (
-                    <img
-                        class="w-32 mx-auto rounded-full -mt-20 border-8 border-white"
-                        src={photoURL}
-                        alt={`Avatar de ${name}`}
-                    />
-                ) : (
-                    <div class="w-32 h-32 mx-auto rounded-full -mt-20 border-8 border-white bg-gray-300 flex justify-center items-center">
-                        <span class="text-white text-3xl font-extrabold">
-                            {name.substring(0, 2)}
-                        </span>
-                    </div>
-                )
-            }
+            {photoURL ? (
+                <img
+                    class="w-32 mx-auto rounded-full -mt-20 border-8 border-white"
+                    src={photoURL}
+                    alt={`Avatar de ${name}`}
+                />
+            ) : (
+                <div class="w-32 h-32 mx-auto rounded-full -mt-20 border-8 border-white bg-gray-300 flex justify-center items-center">
+                    <span class="text-white text-3xl font-extrabold">
+                        {name.substring(0, 2)}
+                    </span>
+                </div>
+            )}
 
             <div class="text-center mt-2 text-3xl font-medium">{name}</div>
             <div class="text-center mt-2 font-light text-sm">{email}</div>
@@ -77,9 +71,7 @@ const name = displayName ?? "No display Name";
                     <span class="font-bold">2.0 k</span> Following
                 </div>
             </div>
-
         </div>
-
     </div>
 
     <footer class="bg-gray-800 text-white mt-4 p-4">
@@ -88,5 +80,4 @@ const name = displayName ?? "No display Name";
             autenticados.
         </p>
     </footer>
-
 </Layout>

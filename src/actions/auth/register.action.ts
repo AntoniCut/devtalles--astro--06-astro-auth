@@ -7,7 +7,13 @@
 import type { AstroCookies } from "astro";
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
-import { createUserWithEmailAndPassword, updateProfile, type AuthError,} from "firebase/auth";
+import {
+
+
+    createUserWithEmailAndPassword,
+    updateProfile,
+    type AuthError,
+} from "firebase/auth";
 import { firebase } from "@/src/firebase/config";
 
 
@@ -18,24 +24,19 @@ import { firebase } from "@/src/firebase/config";
  * - valida los datos del formulario de registro
  */
 export const registerUser = defineAction({
-    
     accept: "form",
-    
+
     input: z.object({
-        
         name: z
             .string({ message: "El nombre es obligatorio" })
             .min(2, { message: "El nombre debe tener al menos 2 caracteres" }),
-        
-        email: z.email({ message: "Ingresá un correo electrónico válido" }),
-        
-        password: z
-            .string({ message: "La contraseña es obligatoria" })
-            .min(6, {
-                message: "La contraseña debe tener al menos 6 caracteres",
-            }),
-        remember_me: z.boolean().optional(),
 
+        email: z.email({ message: "Ingresá un correo electrónico válido" }),
+
+        password: z.string({ message: "La contraseña es obligatoria" }).min(6, {
+            message: "La contraseña debe tener al menos 6 caracteres",
+        }),
+        remember_me: z.boolean().optional(),
     }),
 
     //*  -----  devuelve los datos ya validados  -----
@@ -43,10 +44,10 @@ export const registerUser = defineAction({
 
         //  -----  desestructuración de los datos del formulario  -----
         const { email, password } = input;
-        
+
         //  -----  desestructuración de los datos del contexto  -----
         const { cookies } = context;
-        
+
         //  -----  obtención de la instancia de autenticación de Firebase  -----
         const { auth } = firebase;
 
@@ -54,7 +55,6 @@ export const registerUser = defineAction({
         handleCookies(input, cookies);
 
         try {
-            
             //*  -----  creación del usuario  -----
 
             /** - `credenciales del usuario creado en Firebase` */
@@ -63,7 +63,7 @@ export const registerUser = defineAction({
                 email,
                 password,
             );
-            
+
             //*  -----  actualizar el nombre (displayName)  -----
 
             //*  -----  verificar el correo electronico  -----
@@ -75,12 +75,10 @@ export const registerUser = defineAction({
                 uid: userCredential.user.uid,
                 email: userCredential.user.email,
             };
-
         } catch (error) {
-            
             /** - `error de Firebase` */
             const firebaseError = error as AuthError;
-            
+
             if (firebaseError.code === "auth/email-already-in-use") {
                 throw new Error("Correo electronico ya esta en uso");
             }
@@ -100,9 +98,9 @@ export const registerUser = defineAction({
  * - función que guarda o elimina la cookie del correo según "recuérdame"
  */
 const handleCookies = (
-    input: { 
-        email: string; 
-        remember_me?: boolean 
+    input: {
+        email: string;
+        remember_me?: boolean;
     },
     cookies: AstroCookies,
 ): void => {
