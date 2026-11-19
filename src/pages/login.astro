@@ -24,10 +24,8 @@ const rememberMe = !!email;
     descriptionAuth="Please sign in to your account."
 >
     <div class="flex justify-center self-center z-10">
-        
         <!-- -----  Formulario de Login  ----- -->
         <form method="post" class="p-12 bg-white mx-auto rounded-2xl w-100">
-            
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Login</h3>
                 <p class="text-gray-500">Please sign in to your account.</p>
@@ -35,7 +33,6 @@ const rememberMe = !!email;
 
             <!-- -----  Contenido del formulario  ----- -->
             <div class="space-y-5">
-                
                 <!-- -----  Campo de email  ----- -->
                 <div class="space-y-2">
                     <label
@@ -113,16 +110,31 @@ const rememberMe = !!email;
                 ></p>
 
                 <!-- -----  Botón de envío del formulario  ----- -->
-                <div>
+                <div class="flex flex-col gap-4">
+                    <!--  -----  Botón para ingresar con correo electronico  -----  -->
                     <button
                         id="btnSubmit"
                         type="submit"
-                        class="disabled:bg-gray-300 w-full flex justify-center bg-green-400 hover:bg-green-500 text-gray-100 p-3 rounded-full tracking-wide font-semibold shadow-lg cursor-pointer transition ease-in duration-500"
+                        class="disabled:bg-gray-300 w-full flex justify-center bg-green-400
+                            hover:bg-green-500 text-gray-100 p-3
+                            rounded-full tracking-wide font-semibold shadow-lg
+                            cursor-pointer transition ease-in duration-500"
                     >
                         Ingresar
                     </button>
-                </div>
 
+                    <!--  -----  Botón para ingresar con Google  -----  -->
+                    <button
+                        id="btnGoogle"
+                        type="button"
+                        class="disabled:bg-gray-300 w-full flex justify-center bg-red-400
+                            hover:bg-red-500 text-gray-100 p-3
+                            rounded-full tracking-wide font-semibold shadow-lg
+                            cursor-pointer transition ease-in duration-500"
+                    >
+                        Ingresar con Google
+                    </button>
+                </div>
             </div>
 
             <!-- -----  Pie de página del formulario  ----- -->
@@ -140,18 +152,20 @@ const rememberMe = !!email;
                     </a>
                 </span>
             </div>
-
         </form>
-
     </div>
-
 </AuthLayout>
 
-
 <script>
-    
     import { actions, isInputError } from "astro:actions";
     import Swal from "sweetalert2";
+    import {
+        GoogleAuthProvider,
+        signInWithPopup,
+        signOut,
+        type AuthError,
+    } from "firebase/auth";
+    import { firebase } from "@/src/firebase/config";
 
     /**
      * ----------------------------------
@@ -160,49 +174,55 @@ const rememberMe = !!email;
      * - prepara el formulario de login en cada carga del router
      */
     const prepareLoginForm = (): void => {
-        
         //*  -----  referencias al HTML  -----
 
         /** - `formulario de login` */
-        const form = document.querySelector("form") as HTMLFormElement | null;
+        const $form = document.querySelector("form") as HTMLFormElement | null;
 
         /** - `botón de envío` */
-        const btnSubmit = document.getElementById(
+        const $btnSubmit = document.getElementById(
             "btnSubmit",
         ) as HTMLButtonElement | null;
 
+        /** - `botón de ingreso con Google` */
+        const $btnGoogle = document.getElementById(
+            "btnGoogle",
+        ) as HTMLButtonElement | null;
+
         /** - `mensaje de resultado del formulario` */
-        const formFeedback = document.getElementById(
+        const $formFeedback = document.getElementById(
             "formFeedback",
         ) as HTMLParagraphElement | null;
 
+        /** - `checkbox de recordarme` */
+        const $rememberMe = document.getElementById(
+            "rememberMe",
+        ) as HTMLInputElement | null;
+
         //*  -----  si el formulario está completo, escuchar el envío  -----
-        if (form && btnSubmit && formFeedback) {
-            
+        if ($form && $btnSubmit && $btnGoogle && $formFeedback) {
             //*  -----  escuchar el envío del formulario  -----
-            form.addEventListener("submit", async (event) => {
-                
+            $form.addEventListener("submit", async (event) => {
                 //  -----  evitar el envío nativo del formulario  -----
                 event.preventDefault();
 
                 //  -----  limpiar el mensaje anterior  -----
-                formFeedback.textContent = "";
+                $formFeedback.textContent = "";
 
                 //  -----  desactivar el botón mientras se envía  -----
-                btnSubmit.setAttribute("disabled", "disabled");
+                $btnSubmit.setAttribute("disabled", "disabled");
 
                 /** - `datos escritos en el formulario` */
-                const formData = new FormData(form);
+                const formData = new FormData($form);
 
                 /** - `resultado de la acción de login` */
                 const { error } = await actions.loginUser(formData);
 
                 //  -----  reactivar el botón al terminar  -----
-                btnSubmit.removeAttribute("disabled");
+                $btnSubmit.removeAttribute("disabled");
 
                 //*  -----  si la acción devuelve un error, mostrarlo  -----
                 if (error) {
-                    
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
                         ? Object.values(error.fields)
@@ -244,35 +264,150 @@ const rememberMe = !!email;
                     });
 
                     //  -----  marcar el mensaje como error  -----
-                    formFeedback.classList.add("text-red-500");
+                    $formFeedback.classList.add("text-red-500");
 
                     //  -----  quitar el color de éxito  -----
-                    formFeedback.classList.remove("text-green-600");
+                    $formFeedback.classList.remove("text-green-600");
 
                     //  -----  mostrar el error de validación o el de la acción  -----
-                    formFeedback.textContent = swalText;
+                    $formFeedback.textContent = swalText;
 
                     //  -----  detener el envío  -----
                     return;
                 }
 
                 //  -----  marcar el mensaje como éxito  -----
-                formFeedback.classList.add("text-green-600");
+                $formFeedback.classList.add("text-green-600");
 
                 //  -----  quitar el color de error  -----
-                formFeedback.classList.remove("text-red-500");
+                $formFeedback.classList.remove("text-red-500");
 
                 //  -----  confirmar el inicio de sesión  -----
-                formFeedback.textContent = "Sesión iniciada";
+                $formFeedback.textContent = "Sesión iniciada";
 
                 //  -----  redirigir a la página protegida  -----
                 window.location.replace("/protected");
+            });
 
+            //*  -----  escuchar el clic en ingresar con Google  -----
+            $btnGoogle.addEventListener("click", async () => {
+                //  -----  limpiar el mensaje anterior  -----
+                $formFeedback.textContent = "";
+
+                //  -----  desactivar los botones mientras se autentica  -----
+                $btnGoogle.setAttribute("disabled", "disabled");
+                $btnSubmit.setAttribute("disabled", "disabled");
+
+                /** - `proveedor de autenticación de Google` */
+                const googleProvider = new GoogleAuthProvider();
+
+                try {
+                    //  -----  abrir el popup de Google y completar el inicio de sesión  -----
+                    const userCredential = await signInWithPopup(
+                        firebase.auth,
+                        googleProvider,
+                    );
+
+                    /** - `correo devuelto por Google` */
+                    const googleEmail = userCredential.user.email;
+
+                    //  -----  si Google no devolvió correo, cortar el flujo  -----
+                    if (!googleEmail) {
+                        await signOut(firebase.auth);
+
+                        throw new Error(
+                            "Google no devolvió un correo para esta cuenta.",
+                        );
+                    }
+
+                    /** - `credencial OAuth del popup; no es el JWT de Firebase` */
+                    const oauthCredential =
+                        GoogleAuthProvider.credentialFromResult(userCredential);
+
+                    //  -----  si Google no devolvió el id token OAuth, cortar el flujo  -----
+                    if (!oauthCredential?.idToken) {
+                        //  -----  cerrar la sesión local porque el token no sirve  -----
+                        await signOut(firebase.auth);
+
+                        //  -----  cortar el flujo  -----
+                        throw new Error(
+                            "Google no devolvió el token para validar la sesión.",
+                        );
+                    }
+
+                    /** - `resultado de la acción loginGoogle en el servidor` */
+                    const { error: googleActionError } =
+                        await actions.loginGoogle({
+                            idToken: oauthCredential.idToken,
+                            accessToken:
+                                oauthCredential.accessToken ?? undefined,
+                            email: googleEmail,
+                            remember_me: $rememberMe?.checked ?? false,
+                        });
+
+                    //  -----  si la acción del servidor falla, cerrar sesión en el cliente  -----
+                    if (googleActionError) {
+                        await signOut(firebase.auth);
+
+                        //*  -----  mostrar el mensaje de error con sweetalert2  -----
+                        Swal.fire({
+                            title: "¡Ups! Algo salió mal.",
+                            text: googleActionError.message,
+                            icon: "error",
+                            confirmButtonText: "OK",
+                        });
+
+                        //  -----  marcar el mensaje como error  -----
+                        $formFeedback.classList.add("text-red-500");
+                        $formFeedback.classList.remove("text-green-600");
+                        $formFeedback.textContent = googleActionError.message;
+
+                        return;
+                    }
+
+                    //  -----  marcar el mensaje como éxito  -----
+                    $formFeedback.classList.add("text-green-600");
+                    $formFeedback.classList.remove("text-red-500");
+                    $formFeedback.textContent = "Sesión iniciada con Google";
+
+                    //  -----  redirigir a la página protegida  -----
+                    window.location.replace("/protected");
+                } catch (error) {
+                    /** - `error tipado de Firebase` */
+                    const firebaseError = error as AuthError;
+
+                    /** - `mensaje amigable según el código de Firebase` */
+                    const swalText =
+                        firebaseError.code === "auth/popup-closed-by-user"
+                            ? "Cancelaste el inicio de sesión con Google."
+                            : firebaseError.code ===
+                                "auth/cancelled-popup-request"
+                              ? "Ya hay un inicio de sesión con Google en curso."
+                              : error instanceof Error
+                                ? error.message
+                                : "No se pudo iniciar sesión con Google. Probá de nuevo.";
+
+                    //*  -----  mostrar el mensaje de error con sweetalert2  -----
+                    Swal.fire({
+                        title: "¡Ups! Algo salió mal.",
+                        text: swalText,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+
+                    //  -----  marcar el mensaje como error  -----
+                    $formFeedback.classList.add("text-red-500");
+                    $formFeedback.classList.remove("text-green-600");
+                    $formFeedback.textContent = swalText;
+                } finally {
+                    //  -----  reactivar los botones al terminar  -----
+                    $btnGoogle.removeAttribute("disabled");
+                    $btnSubmit.removeAttribute("disabled");
+                }
             });
         }
     };
 
     //  -----  preparar el formulario en cada carga del router  -----
     document.addEventListener("astro:page-load", prepareLoginForm);
-    
 </script>

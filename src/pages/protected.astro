@@ -1,14 +1,12 @@
 ---
-
 /*
-    *  -----------------------------------------------------  *
-    *  -----  index.astro  --  /src/pages/index.astro  -----  *
-    *  -----------------------------------------------------  *
- */
+    *  -------------------------------------------------------------  *
+    *  -----  protected.astro  --  /src/pages/protected.astro  -----  *
+    *  -------------------------------------------------------------  *
+*/
 
 import Layout from "@/src/layouts/Layout.astro";
 import { firebase } from "@/src/firebase/config";
-
 
 /** - `obtiene el usuario autenticado en Firebase` */
 const firebaseUser = firebase.auth.currentUser;
@@ -23,11 +21,19 @@ if (!firebaseUser) {
 await firebaseUser?.reload();
 
 //  -----  obtiene los datos del usuario autenticado  -----
-const { displayName, email, emailVerified, photoURL } = firebaseUser;
+const { displayName, email, emailVerified, photoURL, providerData } =
+    firebaseUser;
 
 //  -----  obtiene el nombre del usuario  -----
 const name = displayName ?? "No display Name";
 
+/** - `foto del proveedor cuando el perfil no tiene photoURL` */
+const providerPhoto = providerData.find(
+    (provider) => provider.photoURL,
+)?.photoURL;
+
+/** - `url del avatar: perfil de Firebase o foto de Google` */
+const avatarUrl = photoURL ?? providerPhoto ?? null;
 ---
 
 <Layout>
@@ -39,11 +45,12 @@ const name = displayName ?? "No display Name";
     <div class="bg-gray-200 rounded-xl font-sans h-[500px] w-full flex flex-row justify-center items-center">
         <!--  -----  card del usuario  -----  -->
         <div class="card w-96 mx-auto bg-white shadow-xl hover:shadow rounded-3xl">
-            {photoURL ? (
+            {avatarUrl ? (
                 <img
-                    class="w-32 mx-auto rounded-full -mt-20 border-8 border-white"
-                    src={photoURL}
+                    class="w-32 h-32 mx-auto rounded-full -mt-20 border-8 border-white object-cover"
+                    src={avatarUrl}
                     alt={`Avatar de ${name}`}
+                    referrerpolicy="no-referrer"
                 />
             ) : (
                 <div class="w-32 h-32 mx-auto rounded-full -mt-20 border-8 border-white bg-gray-300 flex justify-center items-center">

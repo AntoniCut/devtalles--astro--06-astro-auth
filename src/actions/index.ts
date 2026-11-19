@@ -7,6 +7,7 @@
 import { registerUser } from "@/src/actions/auth/register.action";
 import { logoutUser } from "@/src/actions/auth/logout.action";
 import { loginUser } from "@/src/actions/auth/login.action";
+import { loginGoogle } from "@/src/actions/auth/login-google.action";
 
 
 /**
@@ -19,4 +20,5 @@ export const server = {
     registerUser,
     logoutUser,
     loginUser,
+    loginGoogle,
 };
