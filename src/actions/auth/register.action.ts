@@ -8,11 +8,10 @@ import type { AstroCookies } from "astro";
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import {
-
-
     createUserWithEmailAndPassword,
     updateProfile,
-    type AuthError,
+    sendEmailVerification,
+    type AuthError
 } from "firebase/auth";
 import { firebase } from "@/src/firebase/config";
 
@@ -43,7 +42,7 @@ export const registerUser = defineAction({
     handler: async (input, context) => {
 
         //  -----  desestructuración de los datos del formulario  -----
-        const { email, password } = input;
+        const { email, password, name } = input;
 
         //  -----  desestructuración de los datos del contexto  -----
         const { cookies } = context;
@@ -55,6 +54,7 @@ export const registerUser = defineAction({
         handleCookies(input, cookies);
 
         try {
+            
             //*  -----  creación del usuario  -----
 
             /** - `credenciales del usuario creado en Firebase` */
@@ -66,7 +66,22 @@ export const registerUser = defineAction({
 
             //*  -----  actualizar el nombre (displayName)  -----
 
+            //  -----  guardar el nombre en el perfil del usuario recién creado  -----
+            await updateProfile(userCredential.user, {
+                displayName: name,
+            });
+
+
             //*  -----  verificar el correo electronico  -----
+
+            //  -----  envío de correo de verificación  -----
+            await sendEmailVerification(
+                userCredential.user, 
+                {
+                    url: 'http://localhost:4321/protected?emailVerified=true',
+                }
+            );
+
 
             //*  -----  devolver solo datos serializables (POJO)  -----
             return {
@@ -74,6 +89,7 @@ export const registerUser = defineAction({
                 message: "Usuario creado",
                 uid: userCredential.user.uid,
                 email: userCredential.user.email,
+                displayName: name,
             };
         } catch (error) {
             /** - `error de Firebase` */
