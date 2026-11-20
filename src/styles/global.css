@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/*
+ * El CDN de Tailwind 2 en AuthLayout declara `button { cursor: pointer }`
+ * fuera de cualquier layer, y esa regla le gana a `disabled:cursor-not-allowed`.
+ */
+button:disabled {
+    cursor: not-allowed;
+}

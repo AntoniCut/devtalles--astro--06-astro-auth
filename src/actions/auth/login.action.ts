@@ -34,16 +34,13 @@ export const loginUser = defineAction({
     handler: async (input, context) => {
 
         //  -----  desestructuración de los datos del formulario  -----
-        const { email, password } = input;
+        const { email, password, remember_me } = input;
 
         //  -----  desestructuración de los datos del contexto  -----
         const { cookies } = context;
 
         //  -----  obtención de la instancia de autenticación de Firebase  -----
         const { auth } = firebase;
-
-        //  -----  maneja la cookie del correo según "recuérdame"  -----
-        handleCookies(input, cookies);
 
         try {
             /** - `credenciales del usuario autenticado` */
@@ -53,12 +50,18 @@ export const loginUser = defineAction({
                 password,
             );
 
+            /** - `correo confirmado por Firebase` */
+            const verifiedEmail = userCredential.user.email ?? email;
+
+            //  -----  guardar o borrar la cookie recién cuando la sesión existe  -----
+            handleCookies({ email: verifiedEmail, remember_me }, cookies);
+
             //  -----  devolver solo datos serializables (POJO)  -----
             return {
                 ok: true,
                 message: "Sesión iniciada",
                 uid: userCredential.user.uid,
-                email: userCredential.user.email,
+                email: verifiedEmail,
             };
         } catch (error) {
             //*  -----  si Firebase rechaza las credenciales  -----

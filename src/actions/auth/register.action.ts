@@ -8,10 +8,12 @@ import type { AstroCookies } from "astro";
 import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import {
+
+
     createUserWithEmailAndPassword,
     updateProfile,
     sendEmailVerification,
-    type AuthError
+    type AuthError,
 } from "firebase/auth";
 import { firebase } from "@/src/firebase/config";
 
@@ -42,7 +44,7 @@ export const registerUser = defineAction({
     handler: async (input, context) => {
 
         //  -----  desestructuración de los datos del formulario  -----
-        const { email, password, name } = input;
+        const { email, password, name, remember_me } = input;
 
         //  -----  desestructuración de los datos del contexto  -----
         const { cookies } = context;
@@ -50,11 +52,7 @@ export const registerUser = defineAction({
         //  -----  obtención de la instancia de autenticación de Firebase  -----
         const { auth } = firebase;
 
-        //  -----  `maneja la cookie del correo según "recuérdame"`  -----
-        handleCookies(input, cookies);
-
         try {
-            
             //*  -----  creación del usuario  -----
 
             /** - `credenciales del usuario creado en Firebase` */
@@ -71,24 +69,25 @@ export const registerUser = defineAction({
                 displayName: name,
             });
 
-
             //*  -----  verificar el correo electronico  -----
 
             //  -----  envío de correo de verificación  -----
-            await sendEmailVerification(
-                userCredential.user, 
-                {
-                    url: 'http://localhost:4321/protected?emailVerified=true',
-                }
-            );
+            await sendEmailVerification(userCredential.user, {
+                url: "http://localhost:4321/protected?emailVerified=true",
+            });
 
+            /** - `correo confirmado por Firebase` */
+            const verifiedEmail = userCredential.user.email ?? email;
+
+            //  -----  guardar o borrar la cookie recién cuando la cuenta existe  -----
+            handleCookies({ email: verifiedEmail, remember_me }, cookies);
 
             //*  -----  devolver solo datos serializables (POJO)  -----
             return {
                 ok: true,
                 message: "Usuario creado",
                 uid: userCredential.user.uid,
-                email: userCredential.user.email,
+                email: verifiedEmail,
                 displayName: name,
             };
         } catch (error) {

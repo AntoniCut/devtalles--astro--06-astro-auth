@@ -115,7 +115,7 @@ const rememberMe = !!email;
                     <button
                         id="btnSubmit"
                         type="submit"
-                        class="disabled:bg-gray-300 w-full flex justify-center bg-green-400
+                        class="disabled:bg-gray-300 disabled:cursor-not-allowed w-full flex justify-center bg-green-400
                             hover:bg-green-500 text-gray-100 p-3
                             rounded-full tracking-wide font-semibold shadow-lg
                             cursor-pointer transition ease-in duration-500"
@@ -127,7 +127,7 @@ const rememberMe = !!email;
                     <button
                         id="btnGoogle"
                         type="button"
-                        class="disabled:bg-gray-300 w-full flex justify-center bg-red-400
+                        class="disabled:bg-gray-300 disabled:cursor-not-allowed w-full flex justify-center bg-red-400
                             hover:bg-red-500 text-gray-100 p-3
                             rounded-full tracking-wide font-semibold shadow-lg
                             cursor-pointer transition ease-in duration-500"
@@ -301,6 +301,10 @@ const rememberMe = !!email;
                 /** - `proveedor de autenticación de Google` */
                 const googleProvider = new GoogleAuthProvider();
 
+                // log  -----  googleProvider  -----
+                console.log("\n\ngoogleProvider =>\n", googleProvider);
+                // log  -----------------------------------------------
+
                 try {
                     //  -----  abrir el popup de Google y completar el inicio de sesión  -----
                     const userCredential = await signInWithPopup(
@@ -308,11 +312,13 @@ const rememberMe = !!email;
                         googleProvider,
                     );
 
+                   
                     /** - `correo devuelto por Google` */
                     const googleEmail = userCredential.user.email;
 
                     //  -----  si Google no devolvió correo, cortar el flujo  -----
                     if (!googleEmail) {
+                        
                         await signOut(firebase.auth);
 
                         throw new Error(
@@ -336,17 +342,15 @@ const rememberMe = !!email;
                     }
 
                     /** - `resultado de la acción loginGoogle en el servidor` */
-                    const { error: googleActionError } =
-                        await actions.loginGoogle({
+                    const { error: googleActionError } = await actions.loginGoogle({
                             idToken: oauthCredential.idToken,
-                            accessToken:
-                                oauthCredential.accessToken ?? undefined,
-                            email: googleEmail,
+                            accessToken: oauthCredential.accessToken ?? undefined,
                             remember_me: $rememberMe?.checked ?? false,
                         });
 
                     //  -----  si la acción del servidor falla, cerrar sesión en el cliente  -----
                     if (googleActionError) {
+                        
                         await signOut(firebase.auth);
 
                         //*  -----  mostrar el mensaje de error con sweetalert2  -----
@@ -372,6 +376,7 @@ const rememberMe = !!email;
 
                     //  -----  redirigir a la página protegida  -----
                     window.location.replace("/protected");
+
                 } catch (error) {
                     /** - `error tipado de Firebase` */
                     const firebaseError = error as AuthError;
@@ -399,13 +404,17 @@ const rememberMe = !!email;
                     $formFeedback.classList.add("text-red-500");
                     $formFeedback.classList.remove("text-green-600");
                     $formFeedback.textContent = swalText;
+
                 } finally {
                     //  -----  reactivar los botones al terminar  -----
                     $btnGoogle.removeAttribute("disabled");
                     $btnSubmit.removeAttribute("disabled");
                 }
+
             });
+
         }
+        
     };
 
     //  -----  preparar el formulario en cada carga del router  -----

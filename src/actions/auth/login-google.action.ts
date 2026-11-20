@@ -24,7 +24,6 @@ import { firebase } from "@/src/firebase/config";
  * - valida el token de Google y sincroniza la sesión en el servidor
  */
 export const loginGoogle = defineAction({
-    
     accept: "json",
 
     input: z.object({
@@ -34,8 +33,6 @@ export const loginGoogle = defineAction({
 
         accessToken: z.string().optional(),
 
-        email: z.email({ message: "Ingresá un correo electrónico válido" }),
-
         remember_me: z.boolean().optional(),
     }),
 
@@ -43,16 +40,13 @@ export const loginGoogle = defineAction({
     handler: async (input, context) => {
 
         //  -----  desestructuración de los datos recibidos  -----
-        const { idToken, accessToken, email, remember_me } = input;
+        const { idToken, accessToken, remember_me } = input;
 
         //  -----  desestructuración de los datos del contexto  -----
         const { cookies } = context;
 
         //  -----  obtención de la instancia de autenticación de Firebase  -----
         const { auth } = firebase;
-
-        //  -----  maneja la cookie del correo según "recuérdame"  -----
-        handleCookies({ email, remember_me }, cookies);
 
         try {
             /** - `credencial OAuth de Google, armada con el id token y el access token del popup` */
@@ -67,16 +61,34 @@ export const loginGoogle = defineAction({
                 googleCredential,
             );
 
+            /** - `correo confirmado por Firebase` */
+            const verifiedEmail = userCredential.user.email;
+
+            //  -----  si Google no devolvió correo, cortar sin tocar la cookie  -----
+            if (!verifiedEmail)
+                //  -----  informar que la cuenta no tiene correo  -----
+                throw new Error(
+                    "Google no devolvió un correo para esta cuenta.",
+                );
+
+            //  -----  guardar o borrar la cookie recién cuando la sesión existe  -----
+            handleCookies({ email: verifiedEmail, remember_me }, cookies);
+
             //  -----  devolver solo datos serializables (POJO)  -----
             return {
                 ok: true,
                 message: "Sesión iniciada con Google",
                 uid: userCredential.user.uid,
-                email: userCredential.user.email,
+                email: verifiedEmail,
                 displayName: userCredential.user.displayName,
             };
         } catch (error) {
             //*  -----  si Firebase rechaza el token de Google  -----
+
+            //  -----  si el corte ya trae un mensaje propio, conservarlo  -----
+            if (error instanceof Error && !("code" in error))
+                //  -----  relanzar el mensaje de la cuenta sin correo  -----
+                throw error;
 
             /** - `error tipado de Firebase` */
             const firebaseError = error as AuthError;
