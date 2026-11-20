@@ -6,6 +6,10 @@
     *  -------------------------------------------------------------------  *
  */
 
+
+ // ----- si hay un usuario autenticado en esta request  -----
+const { isLoggedIn } = Astro.locals;
+
 ---
 
 <!-- component -->
@@ -15,22 +19,29 @@
     </h1>
 
     <div class="flex items-center">
+        
         <ul class="flex items-center space-x-6">
             <li class="font-semibold text-gray-700">
                 <a href="/">Home</a>
             </li>
+            
+            <!--  -----  si hay un usuario autenticado, mostrar el link a la página protegida  -----  -->
+            {isLoggedIn && (
+                <li class="font-semibold text-gray-700">
+                    <a href="/protected">Protegido</a>
+                </li>
+            )}
 
-            <li class="font-semibold text-gray-700">
-                <a href="/protected"> Protegido </a>
-            </li>
-
-            <li class="font-semibold text-gray-700">
-                <a href="/login"> Ingresar </a>
-            </li>
-
-            <li id="logout" class="font-semibold text-gray-700">
-                <a href="/"> Salir </a>
-            </li>
+            <!--  -----  si no hay un usuario autenticado, mostrar el link a la página de login  -----  -->
+            {!isLoggedIn ? (
+                <li class="font-semibold text-gray-700">
+                    <a href="/login">Ingresar</a>
+                </li>
+            ) : (
+                <li id="logout" class="font-semibold text-gray-700">
+                    <a href="/">Salir</a>
+                </li>
+            )}
 
             <li>
                 <svg

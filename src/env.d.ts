@@ -1,7 +1,7 @@
 /*
-    *  -------------------------------------------------  *
+    *  -----------------------------------------  *
     *  -----  env.d.ts  --  /src/env.d.ts  -----  *
-    *  -------------------------------------------------  *
+    *  -----------------------------------------  *
  */
 
 /// <reference types="astro/client" />
@@ -30,4 +30,53 @@ interface ImportMetaEnv {
 
     /** - `id de medición de Analytics` */
     readonly PUBLIC_FIREBASE_MEASUREMENT_ID: string;
+}
+
+
+
+/**
+ * ----------------------------------
+ * -----  interface  -  `User`  -----
+ * ----------------------------------
+ * - `usuario autenticado que viaja en locals`
+ */
+interface User {
+
+    /** - `correo del usuario` */
+    email: string;
+
+    /** - `nombre visible del usuario` */
+    name: string;
+
+    /** - `url del avatar` */
+    avatar: string;
+
+    /** - `si el correo ya fue verificado` */
+    emailVerified: boolean;
+}
+
+
+
+/** - `datos de la request compartidos con páginas y middleware` */
+declare namespace App {
+
+
+
+    /**
+     * ------------------------------------
+     * -----  interface  -  `Locals`  -----
+     * ------------------------------------
+     * - `sesión disponible en Astro.locals y context.locals`
+     */
+    interface Locals {
+
+        /** - `si hay un usuario autenticado` */
+        isLoggedIn: boolean;
+
+        /** - `usuario de la sesión, o null si no hay sesión` */
+        user: User | null;
+    }
+
+
+
 }

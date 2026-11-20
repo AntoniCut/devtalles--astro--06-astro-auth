@@ -6,6 +6,7 @@
 
 import type { MiddlewareNext } from "astro";
 import { defineMiddleware } from "astro:middleware";
+import { firebase } from "@/src/firebase/config";
 
 
 /**
@@ -37,8 +38,32 @@ const authUsers = {
  */
 export const onRequest = defineMiddleware((context, next) => {
 
-    const { url, request } = context;
+    //  -----  obtener la url, request y locals  -----
+    const { url, request, locals } = context;
+    
+    //  -----  obtener el pathname de la url  -----
     const { pathname } = url;
+
+    /** - `usuario de Firebase en esta request` */
+    const user = firebase.auth.currentUser;
+
+    //  -----  publicar si hay sesión para el navbar  -----
+    locals.isLoggedIn = !!user;
+
+    //  -----  si hay usuario, copiar el perfil a locals  -----
+    if (user) {
+        //  -----  guardar email, nombre, avatar y verificación  -----
+        locals.user = {
+            email: user.email ?? "",
+            name: user.displayName ?? "",
+            avatar: user.photoURL ?? "",
+            emailVerified: user.emailVerified,
+        };
+    }
+    //  -----  si no hay usuario, dejar la sesión vacía  -----
+    else
+        //  -----  limpiar el usuario de locals  -----
+        locals.user = null;
 
     /** - `Obtener el header de autenticación` */
     const authHeader = request.headers.get("Authorization") ?? "";

@@ -1,39 +1,148 @@
 ---
+
 /*
     *  -------------------------------------------------------------  *
     *  -----  protected.astro  --  /src/pages/protected.astro  -----  *
     *  -------------------------------------------------------------  *
-*/
+ */
 
 import Layout from "@/src/layouts/Layout.astro";
 import { firebase } from "@/src/firebase/config";
 
-/** - `obtiene el usuario autenticado en Firebase` */
-const firebaseUser = firebase.auth.currentUser;
-console.log("\n\nfirebaseUser =>\n", firebaseUser);
 
-//  -----  si el usuario no esta autenticado === null, redirige a la pagina de login  -----
-if (!firebaseUser) {
-    return Astro.redirect("/login");
+/**
+ * --------------------------------------
+ * -----  type  -  `SessionSource`  -----
+ * --------------------------------------
+ * - `fuente de la sesión que pinta esta página`
+ */
+type SessionSource = "locals" | "firebase";
+
+
+
+/**
+ * --------------------------------------------
+ * -----  interface  -  `SessionProfile`  -----
+ * --------------------------------------------
+ * - `datos que consume la tarjeta, venga de donde venga`
+ */
+interface SessionProfile {
+
+    /** - `nombre visible` */
+    name: string;
+
+    /** - `correo` */
+    email: string;
+
+    /** - `si el correo ya fue verificado` */
+    emailVerified: boolean;
+
+    /** - `url del avatar, o null si no hay foto` */
+    avatarUrl: string | null;
 }
 
-//  -----  recarga el usuario autenticado  -----
-await firebaseUser?.reload();
 
-//  -----  obtiene los datos del usuario autenticado  -----
-const { displayName, email, emailVerified, photoURL, providerData } =
-    firebaseUser;
 
-//  -----  obtiene el nombre del usuario  -----
-const name = displayName ?? "No display Name";
+/**
+ * --------------------------------
+ * -----  `loadFromLocals()`  -----
+ * --------------------------------
+ * - arma el perfil desde Astro.locals
+ */
+const loadFromLocals = (): SessionProfile | null => {
 
-/** - `foto del proveedor cuando el perfil no tiene photoURL` */
-const providerPhoto = providerData.find(
-    (provider) => provider.photoURL,
-)?.photoURL;
+    /** - `sesión publicada por el middleware` */
+    const { isLoggedIn, user } = Astro.locals;
 
-/** - `url del avatar: perfil de Firebase o foto de Google` */
-const avatarUrl = photoURL ?? providerPhoto ?? null;
+    //  -----  si no hay sesión, no hay perfil  -----
+    if (!isLoggedIn || !user)
+        //  -----  indicar que no hay usuario  -----
+        return null;
+
+    //  -----  devolver el perfil de locals  -----
+    return {
+        name: user.name || "No display Name",
+        email: user.email,
+        emailVerified: user.emailVerified,
+        avatarUrl: user.avatar || null,
+    };
+
+};
+
+
+
+/**
+ * ----------------------------------
+ * -----  `loadFromFirebase()`  -----
+ * ----------------------------------
+ * - arma el perfil desde el usuario de Firebase
+ */
+const loadFromFirebase = async (): Promise<SessionProfile | null> => {
+
+    /** - `usuario autenticado en Firebase` */
+    const firebaseUser = firebase.auth.currentUser;
+
+    //  -----  si no hay usuario, no hay perfil  -----
+    if (!firebaseUser)
+        //  -----  indicar que no hay usuario  -----
+        return null;
+
+    //  -----  recargar el usuario autenticado  -----
+    await firebaseUser.reload();
+
+    /** - `datos del perfil en Firebase` */
+    const { displayName, email, emailVerified, photoURL, providerData } =
+        firebaseUser;
+
+    /** - `foto del proveedor cuando el perfil no tiene photoURL` */
+    const providerPhoto = providerData.find(
+        (provider) => provider.photoURL,
+    )?.photoURL;
+
+    //  -----  devolver el perfil de Firebase  -----
+    return {
+        name: displayName ?? "No display Name",
+        email: email ?? "",
+        emailVerified,
+        avatarUrl: photoURL ?? providerPhoto ?? null,
+    };
+
+};
+
+
+
+/** - `fuente por defecto cuando la url no pide otra` */
+const defaultSessionSource: SessionSource = "firebase";
+
+/** - `fuente pedida en la query source` */
+const requestedSource = Astro.url.searchParams.get("source");
+
+/** - `fuente activa de la sesión` */
+const sessionSource: SessionSource =
+    requestedSource === "firebase" || requestedSource === "locals"
+        ? requestedSource
+        : defaultSessionSource;
+
+/** - `perfil de la fuente elegida` */
+let profile: SessionProfile | null;
+
+//  -----  si la fuente es locals, leer Astro.locals  -----
+if (sessionSource === "locals")
+    //  -----  cargar el perfil de locals  -----
+    profile = loadFromLocals();
+//  -----  si la fuente es firebase, leer currentUser  -----
+else
+    //  -----  cargar el perfil de Firebase  -----
+    profile = await loadFromFirebase();
+
+//  -----  si no hay perfil, salir al login  -----
+if (!profile)
+    //  -----  redirigir al login  -----
+    return Astro.redirect("/login");
+
+/** - `datos que pinta la tarjeta` */
+const { name, email, emailVerified, avatarUrl } = profile;
+
 ---
 
 <Layout>
@@ -88,6 +197,11 @@ const avatarUrl = photoURL ?? providerPhoto ?? null;
         <p class="text-center text-white">
             Esta página es protegida y solo puede ser accedida por usuarios
             autenticados.
+        </p>
+        <p class="text-center text-white">
+            {sessionSource === "locals"
+                ? "Sesión leída desde Astro.locals"
+                : "Sesión leída desde Firebase"}
         </p>
     </footer>
 </Layout>
