@@ -27,9 +27,9 @@ const rememberMe = !!email;
     titleAuth="Register"
     descriptionAuth="Please register to your account."
 >
-    <div class="flex justify-center self-center z-10">
+    <div class="flex w-full max-w-md justify-center self-center z-10">
         <!-- -----  Formulario de Registro  ----- -->
-        <form class="p-12 bg-white mx-auto rounded-2xl w-100">
+        <form class="w-full rounded-2xl bg-white p-6 sm:p-12">
             <!-- -----  Encabezado del formulario  ----- -->
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Register</h3>
@@ -218,7 +218,6 @@ const rememberMe = !!email;
                 //*  -----  si la acción devuelve un error, mostrarlo  -----
 
                 if (error) {
-                    
                     /** - `mensajes de los campos inválidos` */
                     const fieldMessages = isInputError(error)
                         ? Object.values(error.fields)

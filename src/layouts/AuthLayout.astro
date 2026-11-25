@@ -47,18 +47,16 @@ const {
         />
 
         <div
-            class="bg-no-repeat bg-cover bg-center relative p-2.5 min-h-screen"
+            class="relative flex min-h-screen flex-col items-center justify-center bg-cover bg-center bg-no-repeat p-4 sm:p-6"
             style="background-image: url(https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=1951&amp;q=80);"
         >
-            <div class="absolute bg-gradient-to-b from-green-500 to-green-400 opacity-75 inset-0 z-0 pointer-events-none"></div>
+            <div class="absolute inset-0 z-0 bg-gradient-to-b from-green-500 to-green-400 opacity-75 pointer-events-none"></div>
 
-            <div class="relative z-10 min-h-screen sm:flex sm:flex-row mx-0 justify-center">
-                <div class="flex-col flex self-center p-10 sm:max-w-5xl xl:max-w-2xl z-10">
-                    <div class="self-start hidden lg:flex flex-col text-white">
-                        <img src="/astro-auth.svg" class="mb-3" />
-                        <h1 class="mb-3 font-bold text-5xl">{titleAuth}</h1>
-                        <p class="pr-3">{descriptionAuth}</p>
-                    </div>
+            <div class="relative z-10 flex w-full flex-col items-center justify-center gap-8 sm:gap-12 lg:flex-row">
+                <div class="hidden w-full max-w-md flex-col text-white lg:flex">
+                    <img src="/astro-auth.svg" class="mb-3" />
+                    <h1 class="mb-3 text-5xl font-bold">{titleAuth}</h1>
+                    <p class="pr-3">{descriptionAuth}</p>
                 </div>
 
                 <!-- -----  Slot para el contenido del Formulario de Login  ----- -->

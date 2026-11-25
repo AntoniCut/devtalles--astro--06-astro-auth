@@ -23,9 +23,9 @@ const rememberMe = !!email;
     titleAuth="Login"
     descriptionAuth="Please sign in to your account."
 >
-    <div class="flex justify-center self-center z-10">
+    <div class="flex w-full max-w-md justify-center self-center z-10">
         <!-- -----  Formulario de Login  ----- -->
-        <form method="post" class="p-12 bg-white mx-auto rounded-2xl w-100">
+        <form method="post" class="w-full rounded-2xl bg-white p-6 sm:p-12">
             <header class="mb-4">
                 <h3 class="font-semibold text-2xl text-gray-800">Login</h3>
                 <p class="text-gray-500">Please sign in to your account.</p>
@@ -312,13 +312,11 @@ const rememberMe = !!email;
                         googleProvider,
                     );
 
-                   
                     /** - `correo devuelto por Google` */
                     const googleEmail = userCredential.user.email;
 
                     //  -----  si Google no devolvió correo, cortar el flujo  -----
                     if (!googleEmail) {
-                        
                         await signOut(firebase.auth);
 
                         throw new Error(
@@ -342,15 +340,16 @@ const rememberMe = !!email;
                     }
 
                     /** - `resultado de la acción loginGoogle en el servidor` */
-                    const { error: googleActionError } = await actions.loginGoogle({
+                    const { error: googleActionError } =
+                        await actions.loginGoogle({
                             idToken: oauthCredential.idToken,
-                            accessToken: oauthCredential.accessToken ?? undefined,
+                            accessToken:
+                                oauthCredential.accessToken ?? undefined,
                             remember_me: $rememberMe?.checked ?? false,
                         });
 
                     //  -----  si la acción del servidor falla, cerrar sesión en el cliente  -----
                     if (googleActionError) {
-                        
                         await signOut(firebase.auth);
 
                         //*  -----  mostrar el mensaje de error con sweetalert2  -----
@@ -376,7 +375,6 @@ const rememberMe = !!email;
 
                     //  -----  redirigir a la página protegida  -----
                     window.location.replace("/protected");
-
                 } catch (error) {
                     /** - `error tipado de Firebase` */
                     const firebaseError = error as AuthError;
@@ -404,17 +402,13 @@ const rememberMe = !!email;
                     $formFeedback.classList.add("text-red-500");
                     $formFeedback.classList.remove("text-green-600");
                     $formFeedback.textContent = swalText;
-
                 } finally {
                     //  -----  reactivar los botones al terminar  -----
                     $btnGoogle.removeAttribute("disabled");
                     $btnSubmit.removeAttribute("disabled");
                 }
-
             });
-
         }
-        
     };
 
     //  -----  preparar el formulario en cada carga del router  -----
