@@ -73,7 +73,8 @@ export const registerUser = defineAction({
 
             //  -----  envío de correo de verificación  -----
             await sendEmailVerification(userCredential.user, {
-                url: "http://localhost:4321/protected?emailVerified=true",
+                //url: "http://localhost:4321/protected?emailVerified=true",
+                url: `${import.meta.env.WEBSITE_URL}/protected?emailVerified=true`,
             });
 
             /** - `correo confirmado por Firebase` */
