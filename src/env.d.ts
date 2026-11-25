@@ -60,8 +60,6 @@ interface User {
 /** - `datos de la request compartidos con páginas y middleware` */
 declare namespace App {
 
-
-
     /**
      * ------------------------------------
      * -----  interface  -  `Locals`  -----

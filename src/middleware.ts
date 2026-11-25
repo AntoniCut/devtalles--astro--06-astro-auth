@@ -17,6 +17,26 @@ import { firebase } from "@/src/firebase/config";
  */
 const privateRoutes = ["/protected"];
 
+
+/**
+ * --------------------------------
+ * -----  `publicRoutes`[]  -----
+ * --------------------------------
+ * - rutas accesibles sin sesión de Firebase
+ */
+const publicRoutes = ["/", "/login", "/register"];
+
+
+/**
+ * -----------------------------------
+ * -----  `guestOnlyRoutes`[]  -----
+ * -----------------------------------
+ * - login y registro: si ya hay sesión, mandar al home (no incluir `/`)
+ */
+const guestOnlyRoutes = ["/login", "/register"];
+
+
+
 /**
  * ---------------------------
  * -----  `authUsers`{}  -----
@@ -38,11 +58,16 @@ const authUsers = {
  */
 export const onRequest = defineMiddleware((context, next) => {
 
-    //  -----  obtener la url, request y locals  -----
-    const { url, request, locals } = context;
+    //  -----  obtener la url, request, locals y redirect  -----
+    const { url, request, locals, redirect } = context;
     
     //  -----  obtener el pathname de la url  -----
     const { pathname } = url;
+
+    //  -----  las actions de Astro viven en /_actions/* y deben responder JSON  -----
+    if (pathname.startsWith("/_actions/"))
+        //  -----  no redirigir al login ni aplicar reglas de rutas públicas/privadas  -----
+        return next();
 
     /** - `usuario de Firebase en esta request` */
     const user = firebase.auth.currentUser;
@@ -64,6 +89,17 @@ export const onRequest = defineMiddleware((context, next) => {
     else
         //  -----  limpiar el usuario de locals  -----
         locals.user = null;
+
+    
+    //  -----  si el usuario no está autenticado y la ruta no es pública, redirigir al login  -----
+    if (!locals.isLoggedIn && !publicRoutes.includes(pathname))
+        return redirect("/login");
+
+    //  -----  si ya hay sesión, no volver a login ni registro (evita bucle en `/`)  -----
+    if (locals.isLoggedIn && guestOnlyRoutes.includes(pathname))
+        return redirect("/");
+
+
 
     /** - `Obtener el header de autenticación` */
     const authHeader = request.headers.get("Authorization") ?? "";
