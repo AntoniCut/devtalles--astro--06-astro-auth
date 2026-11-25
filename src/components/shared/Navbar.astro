@@ -1,121 +1,340 @@
 ---
-
 /*
-    *  -------------------------------------------------------------------  *
-    *  -----  Navbar.astro  --  /src/components/shared/Navbar.astro  -----  *
-    *  -------------------------------------------------------------------  *
+ *  -------------------------------------------------------------------  *
+ *  -----  Navbar.astro  --  /src/components/shared/Navbar.astro  -----  *
+ *  -------------------------------------------------------------------  *
  */
 
-
- // ----- si hay un usuario autenticado en esta request  -----
+/** - `si hay un usuario autenticado en esta request` */
 const { isLoggedIn } = Astro.locals;
-
 ---
 
 <!-- component -->
-<nav class="flex justify-between px-20 py-10 items-center bg-white">
+<nav class="relative flex items-center justify-between bg-white px-4 py-4 md:px-20 md:py-10">
     <h1 class="text-xl text-gray-800 font-bold">
         <a href="/">Auth Astro App</a>
     </h1>
 
-    <div class="flex items-center">
-        
-        <ul class="flex items-center space-x-6">
+    <!--  -----  menú de navegación para pantallas de escritorio  -----  -->
+    <ul class="hidden items-center space-x-6 md:flex">
+        <li class="font-semibold text-gray-700">
+            <a href="/">Home</a>
+        </li>
+
+        <!--  -----  si hay un usuario autenticado, mostrar el link a la página protegida  -----  -->
+        {isLoggedIn && (
             <li class="font-semibold text-gray-700">
-                <a href="/">Home</a>
+                <a href="/protected">Protegido</a>
             </li>
-            
-            <!--  -----  si hay un usuario autenticado, mostrar el link a la página protegida  -----  -->
-            {isLoggedIn && (
-                <li class="font-semibold text-gray-700">
-                    <a href="/protected">Protegido</a>
-                </li>
-            )}
+        )}
 
-            <!--  -----  si no hay un usuario autenticado, mostrar el link a la página de login  -----  -->
-            {!isLoggedIn ? (
-                <li class="font-semibold text-gray-700">
-                    <a href="/login">Ingresar</a>
-                </li>
-            ) : (
-                <li id="logout" class="font-semibold text-gray-700">
-                    <a href="/">Salir</a>
-                </li>
-            )}
-
-            <li>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
-                    />
-                </svg>
+        <!--  -----  si no hay un usuario autenticado, mostrar el link a la página de login  -----  -->
+        {!isLoggedIn ? (
+            <li class="font-semibold text-gray-700">
+                <a href="/login">Ingresar</a>
             </li>
-
-            <li>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                    />
-                </svg>
+        ) : (
+            <li data-logout class="font-semibold text-gray-700">
+                <a href="/">Salir</a>
             </li>
+        )}
 
-            <li>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
-                </svg>
+        <li>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                />
+            </svg>
+        </li>
+
+        <li>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+            </svg>
+        </li>
+
+        <li>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+            </svg>
+        </li>
+    </ul>
+
+    <!--  -----  botón hamburguesa visible por debajo de 768px  -----  -->
+    <button
+        id="menu-toggle"
+        type="button"
+        class="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 md:hidden"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Abrir menú de navegación"
+    >
+        <!--  -----  icono de menú cerrado  -----  -->
+        <svg
+            data-menu-icon="open"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
+        </svg>
+
+        <!--  -----  icono de menú abierto  -----  -->
+        <svg
+            data-menu-icon="close"
+            xmlns="http://www.w3.org/2000/svg"
+            class="hidden h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+            />
+        </svg>
+    </button>
+
+    <!--  -----  menú desplegable para pantallas menores a 768px  -----  -->
+    <ul
+        id="mobile-menu"
+        class="absolute inset-x-0 top-full z-50 hidden space-y-4 border-t border-gray-100 bg-white px-6 py-6 shadow-md md:hidden"
+    >
+        <li class="font-semibold text-gray-700">
+            <a href="/">Home</a>
+        </li>
+
+        <!--  -----  si hay un usuario autenticado, mostrar el link a la página protegida  -----  -->
+        {isLoggedIn && (
+            <li class="font-semibold text-gray-700">
+                <a href="/protected">Protegido</a>
             </li>
-        </ul>
-    </div>
+        )}
+
+        <!--  -----  si no hay un usuario autenticado, mostrar el link a la página de login  -----  -->
+        {!isLoggedIn ? (
+            <li class="font-semibold text-gray-700">
+                <a href="/login">Ingresar</a>
+            </li>
+        ) : (
+            <li data-logout class="font-semibold text-gray-700">
+                <a href="/">Salir</a>
+            </li>
+        )}
+
+        <!--  -----  iconos del menú en una fila horizontal  -----  -->
+        <li class="flex items-center space-x-6 pt-2">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+            >
+                <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                />
+            </svg>
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+            </svg>
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+            </svg>
+        </li>
+    </ul>
 </nav>
 
 <script>
     import { actions } from "astro:actions";
 
     /**
+     * --------------------------------------
+     * -----  `setMobileMenuOpen(isOpen)`  -----
+     * --------------------------------------
+     * - abre o cierra el menú móvil y sincroniza sus atributos accesibles
+     * @param {boolean} isOpen - indica si el menú debe quedar abierto
+     * @return {void}
+     */
+    const setMobileMenuOpen = (isOpen: boolean): void => {
+        
+        /** - `botón hamburguesa` */
+        const $menuToggle = document.querySelector(
+            "#menu-toggle",
+        ) as HTMLButtonElement | null;
+
+        /** - `panel del menú móvil` */
+        const $mobileMenu = document.querySelector(
+            "#mobile-menu",
+        ) as HTMLUListElement | null;
+
+        //  -----  si faltan el botón o el panel, salir  -----
+        if (!$menuToggle || !$mobileMenu)
+            //  -----  no hay menú móvil que actualizar  -----
+            return;
+
+        /** - `icono de menú cerrado` */
+        const $openIcon = $menuToggle.querySelector('[data-menu-icon="open"]');
+
+        /** - `icono de menú abierto` */
+        const $closeIcon = $menuToggle.querySelector(
+            '[data-menu-icon="close"]',
+        );
+
+        //  -----  mostrar u ocultar el panel del menú  -----
+        $mobileMenu.classList.toggle("hidden", !isOpen);
+
+        //  -----  actualizar el estado accesible del botón  -----
+        $menuToggle.setAttribute("aria-expanded", String(isOpen));
+
+        //  -----  actualizar la etiqueta accesible del botón  -----
+        $menuToggle.setAttribute(
+            "aria-label",
+            isOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación",
+        );
+
+        //  -----  mostrar el icono de cerrar cuando el menú está abierto  -----
+        $openIcon?.classList.toggle("hidden", isOpen);
+
+        //  -----  mostrar el icono de abrir cuando el menú está cerrado  -----
+        $closeIcon?.classList.toggle("hidden", !isOpen);
+    };
+
+
+    /**
+     * ---------------------------------
+     * -----  `prepareMobileMenu()`  -----
+     * ---------------------------------
+     * - conecta el botón hamburguesa con el menú móvil en cada carga del router
+     * @return {void}
+     */
+    const prepareMobileMenu = (): void => {
+        /** - `botón hamburguesa` */
+        const $menuToggle = document.querySelector(
+            "#menu-toggle",
+        ) as HTMLButtonElement | null;
+
+        /** - `panel del menú móvil` */
+        const $mobileMenu = document.querySelector(
+            "#mobile-menu",
+        ) as HTMLUListElement | null;
+
+        //  -----  si faltan el botón o el panel, salir  -----
+        if (!$menuToggle || !$mobileMenu)
+            //  -----  no hay menú móvil que preparar  -----
+            return;
+
+        //  -----  volver a cerrar el menú en cada navegación  -----
+        setMobileMenuOpen(false);
+
+        //  -----  alternar el menú al pulsar el botón  -----
+        $menuToggle.addEventListener("click", () => {
+            //  -----  abrir si está cerrado y cerrar si está abierto  -----
+            setMobileMenuOpen($mobileMenu.classList.contains("hidden"));
+        });
+
+        //  -----  cerrar el menú al navegar desde un enlace móvil  -----
+        $mobileMenu.addEventListener("click", (event: MouseEvent) => {
+            /** - `elemento donde ocurrió el clic` */
+            const $target = event.target as HTMLElement;
+
+            //  -----  si el clic fue sobre un enlace, cerrar el menú  -----
+            if ($target.closest("a"))
+                //  -----  cerrar el menú móvil  -----
+                setMobileMenuOpen(false);
+        });
+    };
+
+    /**
      * -------------------------------
      * -----  `prepareLogout()`  -----
      * -------------------------------
      * - prepara el cierre de sesión en cada carga del router
+     * @return {void}
      */
     const prepareLogout = (): void => {
-        /** - `elemento del menú para cerrar sesión` */
-        const $logoutElement = document.querySelector(
-            "#logout",
-        ) as HTMLLIElement | null;
+        /** - `elementos del menú para cerrar sesión` */
+        const $logoutElements =
+            document.querySelectorAll<HTMLLIElement>("[data-logout]");
 
-        //  -----  si el elemento existe, escuchar el clic  -----
-        if ($logoutElement) {
+        //  -----  recorrer cada elemento de cierre de sesión  -----
+        $logoutElements.forEach(($logoutElement) => {
             //  -----  escuchar el clic en "Salir"  -----
             $logoutElement.addEventListener(
                 "click",
@@ -123,16 +342,38 @@ const { isLoggedIn } = Astro.locals;
                     //  -----  evitar la navegación del enlace  -----
                     event.preventDefault();
 
-                    //*  -----  cerrar la sesión en Firebase  -----
+                    //  -----  cerrar la sesión en Firebase  -----
                     await actions.logoutUser();
 
                     //  -----  redirigir al inicio  -----
                     window.location.href = "/";
                 },
             );
-        }
+        });
     };
 
-    //  -----  preparar el logout en cada carga del router  -----
-    document.addEventListener("astro:page-load", prepareLogout);
+    /**
+     * ----------------------------
+     * -----  `prepareNavbar()`  -----
+     * ----------------------------
+     * - prepara el menú móvil y el cierre de sesión en cada carga del router
+     * @return {void}
+     */
+    const prepareNavbar = (): void => {
+        //  -----  preparar el menú móvil  -----
+        prepareMobileMenu();
+
+        //  -----  preparar el cierre de sesión  -----
+        prepareLogout();
+    };
+
+    //  -----  preparar la barra de navegación en cada carga del router  -----
+    document.addEventListener("astro:page-load", prepareNavbar);
+
+    //  -----  cerrar el menú móvil al volver al ancho de escritorio  -----
+    window.matchMedia("(min-width: 768px)").addEventListener("change", () => {
+        //  -----  cerrar el menú móvil  -----
+        setMobileMenuOpen(false);
+    });
+    
 </script>
