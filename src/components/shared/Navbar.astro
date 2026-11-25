@@ -12,7 +12,11 @@ const { isLoggedIn } = Astro.locals;
 <!-- component -->
 <nav class="relative flex items-center justify-between bg-white px-4 py-4 md:px-20 md:py-10">
     <h1 class="text-xl text-gray-800 font-bold">
-        <a href="/">Auth Astro App</a>
+        <a href="/" class="flex items-center gap-2">
+            <!--  -----  logo del proyecto  -----  -->
+            <img src="/astro-auth.svg" alt="" class="h-8 w-8" />
+            Auth Astro App
+        </a>
     </h1>
 
     <!--  -----  menú de navegación para pantallas de escritorio  -----  -->
@@ -233,7 +237,6 @@ const { isLoggedIn } = Astro.locals;
      * @return {void}
      */
     const setMobileMenuOpen = (isOpen: boolean): void => {
-        
         /** - `botón hamburguesa` */
         const $menuToggle = document.querySelector(
             "#menu-toggle",
@@ -275,7 +278,6 @@ const { isLoggedIn } = Astro.locals;
         //  -----  mostrar el icono de abrir cuando el menú está cerrado  -----
         $closeIcon?.classList.toggle("hidden", !isOpen);
     };
-
 
     /**
      * ---------------------------------
@@ -375,5 +377,4 @@ const { isLoggedIn } = Astro.locals;
         //  -----  cerrar el menú móvil  -----
         setMobileMenuOpen(false);
     });
-    
 </script>
